@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Superhero_Mangement_System.DataLayer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,8 @@ namespace Superhero_Mangement_System
         public MainForm()
         {
             InitializeComponent();
+            FileHandler.CreateTextFile();
+            FileHandler.AddNewHero(new string[] { "Maritn", "14", "Flight", "50" });
         }
     }
 }
