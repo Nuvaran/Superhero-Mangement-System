@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Superhero_Mangement_System
 {
-    internal static class Program
+    internal static class MainProgram
     {
         /// <summary>
         /// The main entry point for the application.
@@ -16,7 +16,8 @@ namespace Superhero_Mangement_System
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new MainForm());
+            
         }
     }
 }

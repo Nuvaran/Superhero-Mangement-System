@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Superhero_Mangement_System.DataLayer
+namespace Superhero_Mangement_System.BusinessLogicLayer
 {
-    internal class Data
+    internal class Validations
     {
     }
 }
