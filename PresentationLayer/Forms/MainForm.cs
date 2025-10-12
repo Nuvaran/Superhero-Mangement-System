@@ -17,7 +17,8 @@ namespace Superhero_Mangement_System
         {
             InitializeComponent();
             FileHandler.CreateTextFile();
-            FileHandler.AddNewHero(new string[] { "Maritn", "14", "Flight", "50" });
+            //Test record
+            //FileHandler.AddNewHero(new string[] { "Maritn", "14", "Flight", "50" });
         }
     }
 }
