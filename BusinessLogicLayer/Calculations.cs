@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Superhero_Mangement_System.BusinessLogicLayer
 {
-    internal class UI
+    internal class Calculations
     {
     }
 }

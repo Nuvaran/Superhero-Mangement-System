@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Superhero_Mangement_System
+namespace Superhero_Mangement_System.PresentationLayer.Forms
 {
-    public partial class Form1 : Form
+    public partial class AddNewHero : Form
     {
-        public Form1()
+        public AddNewHero()
         {
             InitializeComponent();
         }

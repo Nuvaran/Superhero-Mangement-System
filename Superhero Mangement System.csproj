@@ -46,16 +46,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessLogicLayer\UI.cs" />
-    <Compile Include="DataLayer\Data.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="BusinessLogicLayer\Calculations.cs" />
+    <Compile Include="BusinessLogicLayer\Validations.cs" />
+    <Compile Include="DataLayer\FileHandler.cs" />
+    <Compile Include="PresentationLayer\Forms\AddNewHero.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="PresentationLayer\Forms\AddNewHero.Designer.cs">
+      <DependentUpon>AddNewHero.cs</DependentUpon>
     </Compile>
-    <Compile Include="PresentationLayer\Logic.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="PresentationLayer\Forms\ViewAllHeroes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\ViewAllHeroes.Designer.cs">
+      <DependentUpon>ViewAllHeroes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\UpdateHero.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\UpdateHero.Designer.cs">
+      <DependentUpon>UpdateHero.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\DeleteHero.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\DeleteHero.Designer.cs">
+      <DependentUpon>DeleteHero.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\HeroesReportSummary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\HeroesReportSummary.Designer.cs">
+      <DependentUpon>HeroesReportSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PresentationLayer\Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

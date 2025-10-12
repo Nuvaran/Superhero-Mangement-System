@@ -1,6 +1,6 @@
-﻿namespace Superhero_Mangement_System
+﻿namespace Superhero_Mangement_System.PresentationLayer.Forms
 {
-    partial class Form1
+    partial class AddNewHero
     {
         /// <summary>
         /// Required designer variable.
@@ -37,4 +37,3 @@
         #endregion
     }
 }
-
