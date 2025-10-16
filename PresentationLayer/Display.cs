@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Superhero_Mangement_System.BusinessLogicLayer
+namespace Superhero_Mangement_System.PresentationLayer
 {
-    internal class Calculations
+    internal class Class1
     {
     }
 }
