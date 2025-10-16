@@ -1,4 +1,5 @@
 ﻿using Superhero_Mangement_System.DataLayer;
+using Superhero_Mangement_System.PresentationLayer.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Superhero_Mangement_System
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new MainHeroView());
         
         }
     }

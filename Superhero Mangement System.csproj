@@ -46,47 +46,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessLogicLayer\Calculations.cs" />
+    <Compile Include="BusinessLogicLayer\CalculationsAndConversions.cs" />
     <Compile Include="BusinessLogicLayer\Validations.cs" />
     <Compile Include="DataLayer\FileHandler.cs" />
-    <Compile Include="PresentationLayer\Forms\AddNewHero.cs">
+    <Compile Include="PresentationLayer\Forms\GetID.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PresentationLayer\Forms\AddNewHero.Designer.cs">
-      <DependentUpon>AddNewHero.cs</DependentUpon>
+    <Compile Include="PresentationLayer\Forms\GetID.Designer.cs">
+      <DependentUpon>GetID.cs</DependentUpon>
     </Compile>
-    <Compile Include="PresentationLayer\Forms\ViewAllHeroes.cs">
+    <Compile Include="PresentationLayer\Inputs.cs" />
+    <Compile Include="PresentationLayer\Display.cs" />
+    <Compile Include="PresentationLayer\Forms\MainHeroView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PresentationLayer\Forms\ViewAllHeroes.Designer.cs">
-      <DependentUpon>ViewAllHeroes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\UpdateHero.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\UpdateHero.Designer.cs">
-      <DependentUpon>UpdateHero.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\DeleteHero.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\DeleteHero.Designer.cs">
-      <DependentUpon>DeleteHero.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\HeroesReportSummary.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\HeroesReportSummary.Designer.cs">
-      <DependentUpon>HeroesReportSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PresentationLayer\Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="PresentationLayer\Forms\MainHeroView.Designer.cs">
+      <DependentUpon>MainHeroView.cs</DependentUpon>
     </Compile>
     <Compile Include="MainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="PresentationLayer\Forms\GetID.resx">
+      <DependentUpon>GetID.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PresentationLayer\Forms\MainHeroView.resx">
+      <DependentUpon>MainHeroView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
