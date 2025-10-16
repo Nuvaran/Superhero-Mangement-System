@@ -11,7 +11,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
 {
     internal class CalculationsAndConversions
     {
-        public static string CalculateRank(int examScore)
+        internal static string CalculateRank(int examScore)
         {
             switch (examScore)
             {
@@ -28,7 +28,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             }
         }
 
-        public static string CalculateThreatLevel(string rank)
+        internal static string CalculateThreatLevel(string rank)
         {
             switch (rank)
             {
@@ -45,12 +45,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             }
         }
 
-        public static string CalculateThreatLevelByScore(int examScore)
-        {
-            string rank = CalculateRank(examScore);
-            return CalculateThreatLevel(rank);
-        }
-        public static DataTable ConvertToDataTable(List<string[]> heroes)
+        internal static DataTable ConvertToDataTable(List<string[]> heroes)
         {
             DataTable dt = new DataTable();
 
@@ -82,7 +77,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             return dt;
         }
 
-        public static bool DeleteHeroById(int heroId)
+        internal static bool DeleteHeroById(int heroId)
         {
             try
             {
@@ -94,7 +89,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             }
         }
 
-        public static int GetSelectedHeroId(DataGridView dataGridView)
+        internal static int GetSelectedHeroId(DataGridView dataGridView)
         {
             if (dataGridView.CurrentRow == null || dataGridView.CurrentRow.IsNewRow)
                 return -1; // No selection
@@ -102,7 +97,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             return Convert.ToInt32(dataGridView.CurrentRow.Cells["ID"].Value);
         }
 
-        public static string GetSelectedHeroName(DataGridView dataGridView)
+        internal static string GetSelectedHeroName(DataGridView dataGridView)
         {
             if (dataGridView.CurrentRow == null || dataGridView.CurrentRow.IsNewRow)
                 return string.Empty;
@@ -110,7 +105,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
             return dataGridView.CurrentRow.Cells["Name"].Value.ToString();
         }
 
-        public static SummaryReport GenerateSummaryReport()
+        internal static SummaryReport GenerateSummaryReport()
         {
             List<string[]> heroes = FileHandler.GetAllHeroes();
             var report = new SummaryReport();
@@ -128,7 +123,7 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
                     report.TotalHeroes++;
 
                     // Calculate age statistics
-                    int age = int.Parse(hero[2]);
+                     int.TryParse(hero[2], out int age);
                     totalAge += age;
                     if (age < report.YoungestAge) report.YoungestAge = age;
                     if (age > report.OldestAge) report.OldestAge = age;
@@ -154,11 +149,41 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
 
             return report;
         }
+
+        internal static DataTable ConvertSummaryToDataTable(SummaryReport report)
+        {
+            DataTable dt = new DataTable();
+
+            // Define columns for summary display
+            dt.Columns.Add("Metric", typeof(string));
+            dt.Columns.Add("Value", typeof(string));
+
+            //Add summary data
+            dt.Rows.Add("Total Heroes", report.TotalHeroes.ToString());
+            dt.Rows.Add("Average Age", report.AverageAge.ToString("F1"));
+            dt.Rows.Add("Average Exam Score", report.AverageExamScore.ToString("F1"));
+            dt.Rows.Add("Youngest Hero", $"{report.YoungestAge} years");
+            dt.Rows.Add("Oldest Hero", $"{report.OldestAge} years");
+            dt.Rows.Add("Lowest Exam Score", report.LowestExamScore.ToString());
+            dt.Rows.Add("Highest Exam Score", report.HighestExamScore.ToString());
+
+            // Add empty row for separation
+            dt.Rows.Add("", "");
+
+            // Add rank distribution
+            dt.Rows.Add("=== HEROES PER RANK ===", "");
+            foreach (var rank in report.HeroesPerRank)
+            {
+                dt.Rows.Add($"{rank.Key}", $"{rank.Value} hero(es)");
+            }
+
+            return dt;
+        }
     }
 
 
     // Summary Report Model
-    public class SummaryReport
+    internal class SummaryReport
     {
         public int TotalHeroes { get; set; }
         public double AverageAge { get; set; }

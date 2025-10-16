@@ -19,15 +19,10 @@ namespace Superhero_Mangement_System.DataLayer
             HeroTextFilePath = Directory.GetParent(HeroTextFilePath).FullName;
            return  HeroTextFilePath = Directory.GetParent(HeroTextFilePath).FullName + "\\DataLayer\\superheroes.txt";
         }
-        internal static bool TextFileExists()
-        {
-            string path = GetTextFilePath();
-            return File.Exists(path);
-        }
         internal static void CreateTextFile()
         {
             string path = GetTextFilePath();
-            if (!TextFileExists())
+            if (!File.Exists(path))
             {
                 // Updated header to include Rank and Threat Level
                 File.WriteAllText(path, "ID,Name,Age,Superpower,Exam Score,Rank,Threat Level\n");
@@ -262,6 +257,8 @@ namespace Superhero_Mangement_System.DataLayer
             parentPath = Directory.GetParent(parentPath).FullName;
             return parentPath + "\\DataLayer\\summary.txt";
         }
+
+       
     }
     
 }

@@ -53,6 +53,7 @@
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "CANCEL";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click_1);
             // 
             // IDInput
             // 

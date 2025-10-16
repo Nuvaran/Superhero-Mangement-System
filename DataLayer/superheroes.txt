@@ -1,6 +1,6 @@
 ID,Name,Age,Superpower,Exam Score,Rank,Threat Level
 1,John Thunder,28,Lightning Control,85,S-Rank,Finals Week
-2,Sarah Vision,24,X-Ray Vision,72,A-Rank,Midterm Madness
+2,Sarah Vision,24,X-Ray,62,A-Rank,Midterm Madness
 3,Mike Steel,32,Super Strength,55,B-Rank,Group Project Gone Wrong
 4,Emma Swift,26,Superspeed,78,A-Rank,Midterm Madness
 6,Olivia Tides,22,Water Manipulation,92,S-Rank,Finals Week
@@ -9,3 +9,5 @@ ID,Name,Age,Superpower,Exam Score,Rank,Threat Level
 9,Alex Stone,35,Earth Control,65,A-Rank,Midterm Madness
 10,Martin,21,Caffiene,55,B-Rank,Group Project Gone Wrong
 11,Piet pompies,17,Wind,0,C-Rank,Pop Quiz
+14,Max Verstappen,117,F1,25,C-Rank,Pop Quiz
+15,Zynadine Zidane,25,Smoking,90,S-Rank,Finals Week

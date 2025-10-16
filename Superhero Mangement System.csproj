@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogicLayer\CalculationsAndConversions.cs" />
-    <Compile Include="BusinessLogicLayer\Validations.cs" />
     <Compile Include="DataLayer\FileHandler.cs" />
     <Compile Include="PresentationLayer\Forms\GetID.cs">
       <SubType>Form</SubType>
@@ -55,7 +54,6 @@
     <Compile Include="PresentationLayer\Forms\GetID.Designer.cs">
       <DependentUpon>GetID.cs</DependentUpon>
     </Compile>
-    <Compile Include="PresentationLayer\Inputs.cs" />
     <Compile Include="PresentationLayer\Display.cs" />
     <Compile Include="PresentationLayer\Forms\MainHeroView.cs">
       <SubType>Form</SubType>

@@ -22,12 +22,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         }
 
 
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
-        }
-
         private void GetID_Load(object sender, EventArgs e)
         {
             IDInput.Maximum = FileHandler.GetNextAvailableId()-1;
@@ -53,6 +47,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
                 lblError.Visible = true;
                 
             }
+        }
+
+        private void btnCancel_Click_1(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

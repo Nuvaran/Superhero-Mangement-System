@@ -3,6 +3,7 @@ using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Superhero_Mangement_System.PresentationLayer
 {
     internal class Display
     {
-        public static void DisplayAllHeroes(DataGridView dataGridView)
+        internal static void DisplayAllHeroes(DataGridView dataGridView)
         {
             try
             {
@@ -25,7 +26,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                 // Display in DataGridView
                 dataGridView.DataSource = heroTable;
                 dataGridView.AutoResizeColumns();
-                dataGridView.Refresh();
             }
             catch (Exception ex)
             {
@@ -34,51 +34,60 @@ namespace Superhero_Mangement_System.PresentationLayer
             }
         }
 
-
-        public static void DisplaySummaryReport(TextBox textBoxDisplay = null)
+        public static void DisplaySummaryInDataGridView(DataGridView dataGridView)
         {
             try
             {
-                // Generate report through business logic
+                // Generate summary
                 SummaryReport report = CalculationsAndConversions.GenerateSummaryReport();
-
-                // Save to file
                 FileHandler.SaveSummaryToFile(report);
+                DataTable summaryTable = CalculationsAndConversions.ConvertSummaryToDataTable(report);
 
-                // Display in UI if textbox provided
-                if (textBoxDisplay != null)
-                {
-                    textBoxDisplay.Text = FormatSummaryForDisplay(report);
-                }
+                // Create a NEW form with a NEW DataGridView
+                Form summaryForm = new Form();
+                summaryForm.Text = "Superhero Academy - Summary Report";
+                summaryForm.Size = new Size(500, 400);
+                summaryForm.StartPosition = FormStartPosition.CenterParent;
+                summaryForm.FormBorderStyle = FormBorderStyle.FixedDialog; // Not resizable
+                summaryForm.MaximizeBox = false; // Remove maximize button
+                summaryForm.MinimizeBox = false; // Remove minimize button
 
-                MessageBox.Show("Summary report generated and saved to summary.txt!",
-                              "Report Complete",
+                // Create Close button
+                Button btnClose = new Button();
+                btnClose.Text = "Close";
+                btnClose.Size = new Size(80, 30);
+                btnClose.Location = new Point(205, 320); // Centered
+                btnClose.Anchor = AnchorStyles.Bottom;
+                btnClose.Click += (s, e) => summaryForm.Close();
+
+                // Create DataGridView
+                DataGridView summaryDGV = new DataGridView();
+                summaryDGV.Location = new Point(10, 10);
+                summaryDGV.Size = new Size(464, 300); // Leave space for button
+                summaryDGV.DataSource = summaryTable;
+                summaryDGV.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                summaryDGV.ReadOnly = true; // Make it read-only
+                summaryDGV.AllowUserToAddRows = false;
+                summaryDGV.AllowUserToDeleteRows = false;
+                summaryDGV.RowHeadersVisible = false; // Cleaner look
+
+                // Add controls to form
+                summaryForm.Controls.Add(summaryDGV);
+                summaryForm.Controls.Add(btnClose);
+
+                // Set close button as default (Enter key closes)
+                summaryForm.AcceptButton = btnClose;
+
+                summaryForm.ShowDialog();
+
+                MessageBox.Show("Summary report generated and saved to summary.txt!", "Success",
                               MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error generating summary: {ex.Message}", "Error",
+                MessageBox.Show($"Error creating summary: {ex.Message}", "Error",
                               MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-        private static string FormatSummaryForDisplay(SummaryReport report)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("=== SUMMARY REPORT ===");
-            sb.AppendLine($"Total Heroes: {report.TotalHeroes}");
-            sb.AppendLine($"Average Age: {report.AverageAge}");
-            sb.AppendLine($"Average Exam Score: {report.AverageExamScore}");
-            sb.AppendLine($"Age Range: {report.YoungestAge} - {report.OldestAge} years");
-            sb.AppendLine($"Exam Score Range: {report.LowestExamScore} - {report.HighestExamScore}");
-            sb.AppendLine();
-            sb.AppendLine("=== HEROES PER RANK ===");
-
-            foreach (var rank in report.HeroesPerRank)
-            {
-                sb.AppendLine($"{rank.Key}: {rank.Value} hero(es)");
-            }
-
-            return sb.ToString();
         }
 
 

@@ -13,18 +13,13 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
 {
     public partial class MainHeroView : Form
     {
-        string change;
+        
         public MainHeroView()
         {
             InitializeComponent();
         }
 
         
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void MainHeroView_Load(object sender, EventArgs e)
         {
@@ -36,7 +31,13 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         }
         private void RefreshHeroesDisplay()
         {
+           
             Display.DisplayAllHeroes(dgvHeroes);
+            dgvHeroes.AutoResizeRows();
+            dgvHeroes.Columns["Name"].Width = 329;
+            dgvHeroes.Columns["Superpower"].Width = 180;
+            dgvHeroes.Columns["Threat Level"].Width = 205;
+
         }
         private void DisableAllFields()
         {
@@ -94,16 +95,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
                 numAge.Value = age;
             if (int.TryParse(selectedRow.Cells["Exam Score"].Value.ToString(), out int score))
                 numExamScore.Value = score;
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void numAge_ValueChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -192,18 +183,18 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
 
                 //Change shared buttons and label
                 btnSave.Text = "Add";
-                lblChange.Text = "Add New Hero:";
+                lblChange.Text = "Add New Hero?";
             }
             else if (changeType == "Update")
             {
                 //Change shared buttons and label
                 btnSave.Text = "Update";
-                lblChange.Text = "Update Hero";
+                lblChange.Text = "Update Hero?";
             }
             else if (changeType == "Delete")
             {
                 btnSave.Text = "Delete";
-                lblChange.Text = "Delete Selected Record?:";
+                lblChange.Text = "Delete Selected Record?";
             }
         }
         
@@ -217,9 +208,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         {
             ChangeToRecords("Delete");
         }
-
-        private void btnSave_Click(object sender, EventArgs e)
+        string change;
+        internal void btnSave_Click(object sender, EventArgs e)
         {
+            
             if (change == "Add")
             {
                 string[] heroFields = {txtName.Text.Trim(),numAge.Value.ToString(),txtSuperpower.Text.Trim(),numExamScore.Value.ToString() };
@@ -240,6 +232,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         private void dgvHeroes_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             dgvHeroes.ClearSelection();
+        }
+
+        private void btnSummaryReport_Click(object sender, EventArgs e)
+        {
+            Display.DisplaySummaryInDataGridView(dgvHeroes);
         }
     }
 }
