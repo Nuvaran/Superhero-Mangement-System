@@ -1,4 +1,6 @@
 ﻿using SiticoneNetFrameworkUI;
+using Superhero_Mangement_System.BusinessLogicLayer;
+using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,10 +24,18 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private TextBox txtHeroID, txtName, txtAge, txtSuperpower, txtExamScore;
         private DataGridView heroesGrid;
+        private FileHandler fileHandler;
+        private Calculations calculations;
+        private Validations validations;
+        private List<Dictionary<string, string>> heroesData;
 
         public UpdateHeroForm()
         {
             InitializeComponent();
+            fileHandler = new FileHandler();
+            calculations = new Calculations();
+            validations = new Validations();
+            heroesData = new List<Dictionary<string, string>>();
         }
 
         private void UpdateHeroForm_Load(object sender, EventArgs e)
@@ -34,7 +44,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             InitializeHeader();
             InitializeHeroList();
             InitializeEditPanel();
-            LoadSampleData();
+            LoadHeroesFromFile();
         }
 
         private void SetupForm()
@@ -50,7 +60,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeHeader()
         {
-            // Title Label
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ Update Hero Information ⚡",
@@ -61,7 +70,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(titleLabel);
 
-            // Subtitle
             SiticoneLabel subtitleLabel = new SiticoneLabel
             {
                 Text = "Select a hero from the list on the left to edit their information",
@@ -75,7 +83,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeHeroList()
         {
-            // Heroes List Panel (Left side)
             SiticonePanel listPanel = new SiticonePanel
             {
                 Size = new Size(500, 420),
@@ -84,7 +91,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 1
             };
 
-            // List Title
             SiticoneLabel listTitle = new SiticoneLabel
             {
                 Text = "📋 Heroes List",
@@ -95,7 +101,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             listPanel.Controls.Add(listTitle);
 
-            // DataGridView for heroes list
             heroesGrid = new DataGridView
             {
                 Size = new Size(470, 357),
@@ -116,7 +121,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.GridColor = Color.FromArgb(50, 50, 80);
             heroesGrid.BorderStyle = BorderStyle.None;
 
-            // Setup columns
             heroesGrid.Columns.Add("HeroID", "Hero ID");
             heroesGrid.Columns.Add("Name", "Name");
             heroesGrid.Columns.Add("Age", "Age");
@@ -125,7 +129,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.Columns.Add("Rank", "Rank");
             heroesGrid.Columns.Add("ThreatLevel", "Threat Level");
 
-            // Set column widths
             heroesGrid.Columns["HeroID"].Width = 60;
             heroesGrid.Columns["Name"].Width = 70;
             heroesGrid.Columns["Age"].Width = 45;
@@ -134,7 +137,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.Columns["Rank"].Width = 55;
             heroesGrid.Columns["ThreatLevel"].Width = 60;
 
-            // Style headers
             heroesGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkSecondary,
@@ -143,7 +145,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Style cells
             heroesGrid.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkBg,
@@ -153,7 +154,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Font = new Font("Segoe UI", 8)
             };
 
-            // Row selection event
             heroesGrid.SelectionChanged += (s, e) => OnHeroSelected();
 
             listPanel.Controls.Add(heroesGrid);
@@ -162,7 +162,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeEditPanel()
         {
-            // Edit Panel (Right side)
             SiticonePanel editPanel = new SiticonePanel
             {
                 Size = new Size(435, 420),
@@ -171,7 +170,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 1
             };
 
-            // Edit Title
             SiticoneLabel editTitle = new SiticoneLabel
             {
                 Text = "✏️ Edit Hero Details",
@@ -184,27 +182,21 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
             int yPos = 50;
 
-            // Hero ID (Read-only)
             CreateEditField(editPanel, "Hero ID:", out txtHeroID, 20, yPos, true);
             yPos += 60;
 
-            // Name
             CreateEditField(editPanel, "Name:", out txtName, 20, yPos, false);
             yPos += 60;
 
-            // Age
             CreateEditField(editPanel, "Age:", out txtAge, 20, yPos, false);
             yPos += 60;
 
-            // Superpower
             CreateEditField(editPanel, "Superpower:", out txtSuperpower, 20, yPos, false);
             yPos += 60;
 
-            // Exam Score
             CreateEditField(editPanel, "Exam Score:", out txtExamScore, 20, yPos, false);
             yPos += 70;
 
-            // Update Button
             SiticoneButton updateBtn = new SiticoneButton
             {
                 Text = "💾 Update Hero",
@@ -219,7 +211,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             updateBtn.Click += (s, e) => OnUpdateHeroClicked();
             editPanel.Controls.Add(updateBtn);
 
-            // Cancel Button
             SiticoneButton cancelBtn = new SiticoneButton
             {
                 Text = "❌ Clear",
@@ -239,7 +230,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void CreateEditField(SiticonePanel parent, string labelText, out TextBox textBox, int x, int y, bool isReadOnly)
         {
-            // Label
             SiticoneLabel label = new SiticoneLabel
             {
                 Text = labelText,
@@ -250,7 +240,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             parent.Controls.Add(label);
 
-            // TextBox
             textBox = new TextBox
             {
                 Size = new Size(300, 35),
@@ -269,51 +258,61 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             if (heroesGrid.SelectedRows.Count > 0)
             {
                 DataGridViewRow selectedRow = heroesGrid.SelectedRows[0];
+                string heroID = selectedRow.Cells["HeroID"].Value?.ToString() ?? "";
 
-                // Populate edit fields
-                txtHeroID.Text = selectedRow.Cells["HeroID"].Value?.ToString() ?? "";
-                txtName.Text = GetFullHeroData(selectedRow.Cells["HeroID"].Value?.ToString() ?? "", "Name");
-                txtAge.Text = GetFullHeroData(selectedRow.Cells["HeroID"].Value?.ToString() ?? "", "Age");
-                txtSuperpower.Text = GetFullHeroData(selectedRow.Cells["HeroID"].Value?.ToString() ?? "", "Superpower");
-                txtExamScore.Text = GetFullHeroData(selectedRow.Cells["HeroID"].Value?.ToString() ?? "", "ExamScore");
-            }
-        }
-
-        private string GetFullHeroData(string heroID, string fieldName)
-        {
-            // Complete hero database with all sample data
-            switch (heroID)
-            {
-                case "H001":
-                    return fieldName == "Name" ? "Saitama" : fieldName == "Age" ? "25" : fieldName == "Superpower" ? "One Punch" : "98";
-                case "H002":
-                    return fieldName == "Name" ? "Genos" : fieldName == "Age" ? "18" : fieldName == "Superpower" ? "Incinerate" : "92";
-                case "H003":
-                    return fieldName == "Name" ? "Mumen Rider" : fieldName == "Age" ? "28" : fieldName == "Superpower" ? "Justice Crash" : "78";
-                case "H004":
-                    return fieldName == "Name" ? "Tatsumaki" : fieldName == "Age" ? "28" : fieldName == "Superpower" ? "Telekinesis" : "95";
-                case "H005":
-                    return fieldName == "Name" ? "Sonic" : fieldName == "Age" ? "25" : fieldName == "Superpower" ? "Speed" : "88";
-                case "H006":
-                    return fieldName == "Name" ? "King" : fieldName == "Age" ? "30" : fieldName == "Superpower" ? "Popularity" : "72";
-                case "H007":
-                    return fieldName == "Name" ? "Puri Puri" : fieldName == "Age" ? "26" : fieldName == "Superpower" ? "Beast" : "85";
-                case "H008":
-                    return fieldName == "Name" ? "Zombieman" : fieldName == "Age" ? "40" : fieldName == "Superpower" ? "Regeneration" : "80";
-                default:
-                    return "";
+                var hero = heroesData.FirstOrDefault(h => h["HeroID"] == heroID);
+                if (hero != null)
+                {
+                    txtHeroID.Text = hero["HeroID"];
+                    txtName.Text = hero["Name"];
+                    txtAge.Text = hero["Age"];
+                    txtSuperpower.Text = hero["Superpower"];
+                    txtExamScore.Text = hero["ExamScore"];
+                }
             }
         }
 
         private void OnUpdateHeroClicked()
         {
-            if (string.IsNullOrEmpty(txtHeroID.Text))
+            if (!validations.ValidateHeroInputs(txtHeroID, txtName, txtAge, txtSuperpower, txtExamScore))
+                return;
+
+            if (!int.TryParse(txtExamScore.Text, out int examScore))
             {
-                MessageBox.Show("Please select a hero to update.", "Warning");
+                MessageBox.Show("Exam Score must be a valid number!", "Validation Error");
                 return;
             }
 
-            MessageBox.Show($"Hero '{txtName.Text}' updated successfully!\nLogic to be implemented.", "Success");
+            if (examScore < 0 || examScore > 100)
+            {
+                MessageBox.Show("Exam Score must be between 0 and 100!", "Validation Error");
+                return;
+            }
+
+            string heroID = txtHeroID.Text;
+            var hero = heroesData.FirstOrDefault(h => h["HeroID"] == heroID);
+
+            if (hero != null)
+            {
+                hero["Name"] = txtName.Text;
+                hero["Age"] = txtAge.Text;
+                hero["Superpower"] = txtSuperpower.Text;
+                hero["ExamScore"] = txtExamScore.Text;
+
+                var (rank, threatLevel) = calculations.DetermineRankAndThreat(examScore);
+                hero["Rank"] = rank + "-Rank";
+                hero["ThreatLevel"] = threatLevel;
+
+                SaveHeroesToFile();
+                RefreshGrid();
+                ClearEditFields();
+
+                MessageBox.Show($"Hero '{txtName.Text}' updated successfully!", "Success");
+            }
+            else
+            {
+                MessageBox.Show("Hero not found!", "Error");
+            }
         }
 
         private void ClearEditFields()
@@ -326,19 +325,61 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.ClearSelection();
         }
 
-        private void LoadSampleData()
+        private void LoadHeroesFromFile()
         {
-            // Sample data - Replace with actual data from file/database
-            heroesGrid.Rows.Add("H001", "Saitama", 25, "One Punch", 98, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H002", "Genos", 18, "Incinerate", 92, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H003", "Mumen Rider", 28, "Justice Crash", 78, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H004", "Tatsumaki", 28, "Telekinesis", 95, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H005", "Sonic", 25, "Speed", 88, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H006", "King", 30, "Popularity", 72, "B-Rank", "Wolf");
-            heroesGrid.Rows.Add("H007", "Puri Puri", 26, "Beast", 85, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H008", "Zombieman", 40, "Regeneration", 80, "A-Rank", "Tiger");
+            heroesData.Clear();
+            var lines = fileHandler.ReadAllHeroes();
 
-            // Color code the Rank column
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var hero = ParseHeroRecord(line);
+                if (hero != null)
+                {
+                    heroesData.Add(hero);
+                }
+            }
+
+            RefreshGrid();
+        }
+
+        private Dictionary<string, string> ParseHeroRecord(string line)
+        {
+            var parts = line.Split('|');
+            if (parts.Length < 7)
+                return null;
+
+            return new Dictionary<string, string>
+            {
+                { "HeroID", parts[0].Trim() },
+                { "Name", parts[1].Trim() },
+                { "Age", parts[2].Trim() },
+                { "Superpower", parts[3].Trim() },
+                { "ExamScore", parts[4].Trim() },
+                { "Rank", parts[5].Trim() },
+                { "ThreatLevel", parts[6].Trim() }
+            };
+        }
+
+        private void RefreshGrid()
+        {
+            heroesGrid.Rows.Clear();
+
+            foreach (var hero in heroesData)
+            {
+                heroesGrid.Rows.Add(
+                    hero["HeroID"],
+                    hero["Name"],
+                    hero["Age"],
+                    hero["Superpower"],
+                    hero["ExamScore"],
+                    hero["Rank"],
+                    hero["ThreatLevel"]
+                );
+            }
+
             for (int i = 0; i < heroesGrid.Rows.Count; i++)
             {
                 string rank = heroesGrid.Rows[i].Cells["Rank"].Value.ToString();
@@ -346,6 +387,19 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 heroesGrid.Rows[i].Cells["Rank"].Style.ForeColor = rankColor;
                 heroesGrid.Rows[i].Cells["Rank"].Style.Font = new Font("Segoe UI", 8, FontStyle.Bold);
             }
+        }
+
+        private void SaveHeroesToFile()
+        {
+            List<string> heroRecords = new List<string>();
+
+            foreach (var hero in heroesData)
+            {
+                string record = $"{hero["HeroID"]}|{hero["Name"]}|{hero["Age"]}|{hero["Superpower"]}|{hero["ExamScore"]}|{hero["Rank"]}|{hero["ThreatLevel"]}";
+                heroRecords.Add(record);
+            }
+
+            fileHandler.OverwriteAllHeroes(heroRecords);
         }
 
         private Color GetRankColor(string rank)
