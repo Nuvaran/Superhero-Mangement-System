@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Superhero_Mangement_System.PresentationLayer;
+using Superhero_Mangement_System.PresentationLayer.Pages;
 
 namespace Superhero_Mangement_System
 {
@@ -16,7 +18,7 @@ namespace Superhero_Mangement_System
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new DashboardForm());
         }
     }
 }
