@@ -1,4 +1,5 @@
 ﻿using SiticoneNetFrameworkUI;
+using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +21,11 @@ namespace Superhero_Mangement_System.PresentationLayer
         private Color darkBg = Color.FromArgb(26, 26, 46);
         private Color darkSecondary = Color.FromArgb(18, 18, 43);
 
+        private DataGridView heroesGrid;
+        private TextBox searchBox;
+        private ComboBox rankCombo;
+        private List<string> allHeroes;
+
         public ViewAllHeroesForm()
         {
             InitializeComponent();
@@ -31,13 +37,13 @@ namespace Superhero_Mangement_System.PresentationLayer
             InitializeHeader();
             InitializeFilterPanel();
             InitializeDataGridView();
-            LoadSampleData();
+            LoadAllHeroes();
         }
 
         private void SetupForm()
         {
             this.Text = "View All Heroes";
-            this.Size = new Size(1000, 700);
+            this.Size = new Size(1000, 650);
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = darkBg;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -93,7 +99,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             filterPanel.Controls.Add(searchLabel);
 
             // Search TextBox
-            TextBox searchBox = new TextBox
+            searchBox = new TextBox
             {
                 Size = new Size(200, 30),
                 Location = new Point(20, 35),
@@ -102,6 +108,7 @@ namespace Superhero_Mangement_System.PresentationLayer
                 ForeColor = Color.Black,
                 BorderStyle = BorderStyle.Fixed3D
             };
+            searchBox.TextChanged += (s, e) => ApplyFilters();
             filterPanel.Controls.Add(searchBox);
 
             // Filter by Rank Label
@@ -116,7 +123,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             filterPanel.Controls.Add(rankLabel);
 
             // Rank ComboBox
-            ComboBox rankCombo = new ComboBox
+            rankCombo = new ComboBox
             {
                 Size = new Size(120, 30),
                 Location = new Point(250, 35),
@@ -126,6 +133,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             };
             rankCombo.Items.AddRange(new string[] { "All", "S-Rank", "A-Rank", "B-Rank", "C-Rank" });
             rankCombo.SelectedIndex = 0;
+            rankCombo.SelectedIndexChanged += (s, e) => ApplyFilters();
             filterPanel.Controls.Add(rankCombo);
 
             // Refresh Button
@@ -140,7 +148,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             refreshBtn.BackColor = accentGreen;
             refreshBtn.MouseEnter += (s, e) => refreshBtn.BackColor = Color.FromArgb(70, 225, 70);
             refreshBtn.MouseLeave += (s, e) => refreshBtn.BackColor = accentGreen;
-            refreshBtn.Click += (s, e) => MessageBox.Show("Refresh clicked! Logic to be implemented.", "Info");
+            refreshBtn.Click += (s, e) => RefreshData();
             filterPanel.Controls.Add(refreshBtn);
 
             this.Controls.Add(filterPanel);
@@ -151,16 +159,16 @@ namespace Superhero_Mangement_System.PresentationLayer
             // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
-                Size = new Size(940, 300),
+                Size = new Size(940, 430),
                 Location = new Point(30, 165),
                 FillColor = darkSecondary,
                 BorderThickness = 1
             };
 
             // DataGridView
-            DataGridView dataGridView = new DataGridView
+            heroesGrid = new DataGridView
             {
-                Size = new Size(920, 276),
+                Size = new Size(920, 410),
                 Location = new Point(10, 10),
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
@@ -170,23 +178,23 @@ namespace Superhero_Mangement_System.PresentationLayer
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             };
 
-            dataGridView.BackgroundColor = darkBg;
-            dataGridView.ForeColor = Color.White;
-            dataGridView.Font = new Font("Segoe UI", 10);
-            dataGridView.GridColor = Color.FromArgb(50, 50, 80);
-            dataGridView.BorderStyle = BorderStyle.None;
+            heroesGrid.BackgroundColor = darkBg;
+            heroesGrid.ForeColor = Color.White;
+            heroesGrid.Font = new Font("Segoe UI", 10);
+            heroesGrid.GridColor = Color.FromArgb(50, 50, 80);
+            heroesGrid.BorderStyle = BorderStyle.None;
 
             // Setup columns
-            dataGridView.Columns.Add("HeroID", "Hero ID");
-            dataGridView.Columns.Add("Name", "Name");
-            dataGridView.Columns.Add("Age", "Age");
-            dataGridView.Columns.Add("Superpower", "Superpower");
-            dataGridView.Columns.Add("ExamScore", "Exam Score");
-            dataGridView.Columns.Add("Rank", "Rank");
-            dataGridView.Columns.Add("ThreatLevel", "Threat Level");
+            heroesGrid.Columns.Add("HeroID", "Hero ID");
+            heroesGrid.Columns.Add("Name", "Name");
+            heroesGrid.Columns.Add("Age", "Age");
+            heroesGrid.Columns.Add("Superpower", "Superpower");
+            heroesGrid.Columns.Add("ExamScore", "Exam Score");
+            heroesGrid.Columns.Add("Rank", "Rank");
+            heroesGrid.Columns.Add("ThreatLevel", "Threat Level");
 
             // Style headers
-            dataGridView.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            heroesGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkSecondary,
                 ForeColor = accentBlue,
@@ -195,7 +203,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             };
 
             // Style cells
-            dataGridView.DefaultCellStyle = new DataGridViewCellStyle
+            heroesGrid.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkBg,
                 ForeColor = Color.White,
@@ -212,50 +220,115 @@ namespace Superhero_Mangement_System.PresentationLayer
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI", 10)
             };
-            dataGridView.AlternatingRowsDefaultCellStyle = alternatingStyle;
+            heroesGrid.AlternatingRowsDefaultCellStyle = alternatingStyle;
 
-            gridPanel.Controls.Add(dataGridView);
+            gridPanel.Controls.Add(heroesGrid);
             this.Controls.Add(gridPanel);
-
-            // Store reference to dataGridView for later use
-            this.Tag = dataGridView;
         }
 
-        private void LoadSampleData()
+        private void LoadAllHeroes()
         {
-            DataGridView dataGridView = (DataGridView)this.Tag;
-
-            // Sample data - Replace with actual data from file/database
-            dataGridView.Rows.Add("H001", "Saitama", 25, "One Punch", 98, "S-Rank", "Dragon");
-            dataGridView.Rows.Add("H002", "Genos", 18, "Incinerate", 92, "S-Rank", "Dragon");
-            dataGridView.Rows.Add("H003", "Mumen Rider", 28, "Justice Crash", 78, "A-Rank", "Tiger");
-            dataGridView.Rows.Add("H004", "Tatsumaki", 28, "Telekinesis", 95, "S-Rank", "Dragon");
-            dataGridView.Rows.Add("H005", "Sonic", 25, "Speed", 88, "A-Rank", "Tiger");
-            dataGridView.Rows.Add("H006", "King", 30, "Popularity", 72, "B-Rank", "Wolf");
-            dataGridView.Rows.Add("H007", "Puri Puri", 26, "Beast", 85, "A-Rank", "Tiger");
-            dataGridView.Rows.Add("H008", "Zombieman", 40, "Regeneration", 80, "A-Rank", "Tiger");
-
-            // Color code the Rank column
-            for (int i = 0; i < dataGridView.Rows.Count; i++)
+            try
             {
-                string rank = dataGridView.Rows[i].Cells["Rank"].Value.ToString();
-                Color rankColor = GetRankColor(rank);
-                dataGridView.Rows[i].Cells["Rank"].Style.ForeColor = rankColor;
-                dataGridView.Rows[i].Cells["Rank"].Style.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                FileHandler fileHandler = new FileHandler();
+                allHeroes = fileHandler.ReadAllHeroes();
+                DisplayHeroes(allHeroes);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading heroes: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void RefreshData()
+        {
+            try
+            {
+                LoadAllHeroes();
+                searchBox.Text = "";
+                rankCombo.SelectedIndex = 0;
+                MessageBox.Show("Data refreshed successfully!", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error refreshing data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ApplyFilters()
+        {
+            if (allHeroes == null || allHeroes.Count == 0)
+                return;
+
+            string searchText = searchBox.Text.ToLower();
+            string selectedRank = rankCombo.SelectedItem?.ToString() ?? "All";
+
+            List<string> filteredHeroes = new List<string>();
+
+            foreach (string hero in allHeroes)
+            {
+                if (string.IsNullOrWhiteSpace(hero)) continue;
+
+                string[] parts = hero.Split('|');
+                if (parts.Length < 7) continue;
+
+                string heroName = parts[1].Trim().ToLower();
+                string heroRank = parts[5].Trim();
+
+                bool nameMatch = string.IsNullOrEmpty(searchText) || heroName.Contains(searchText);
+                bool rankMatch = selectedRank == "All" || heroRank.Equals(selectedRank, StringComparison.OrdinalIgnoreCase);
+
+                if (nameMatch && rankMatch)
+                {
+                    filteredHeroes.Add(hero);
+                }
+            }
+
+            DisplayHeroes(filteredHeroes);
+        }
+
+        private void DisplayHeroes(List<string> heroes)
+        {
+            heroesGrid.Rows.Clear();
+
+            foreach (string line in heroes)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                string[] parts = line.Split('|');
+                if (parts.Length >= 7)
+                {
+                    heroesGrid.Rows.Add(
+                        parts[0].Trim(),
+                        parts[1].Trim(),
+                        parts[2].Trim(),
+                        parts[3].Trim(),
+                        parts[4].Trim(),
+                        parts[5].Trim(),
+                        parts[6].Trim()
+                    );
+
+                    // Color code the Rank column
+                    int lastRowIndex = heroesGrid.Rows.Count - 1;
+                    string rank = parts[5].Trim();
+                    Color rankColor = GetRankColor(rank);
+                    heroesGrid.Rows[lastRowIndex].Cells["Rank"].Style.ForeColor = rankColor;
+                    heroesGrid.Rows[lastRowIndex].Cells["Rank"].Style.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                }
             }
         }
 
         private Color GetRankColor(string rank)
         {
-            switch (rank)
+            switch (rank.ToUpper())
             {
-                case "S-Rank":
+                case "S-RANK":
                     return accentGold;
-                case "A-Rank":
+                case "A-RANK":
                     return accentBlue;
-                case "B-Rank":
+                case "B-RANK":
                     return accentGreen;
-                case "C-Rank":
+                case "C-RANK":
                     return accentGray;
                 default:
                     return Color.White;
