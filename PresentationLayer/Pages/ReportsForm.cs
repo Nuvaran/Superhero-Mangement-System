@@ -1,4 +1,5 @@
 ﻿using SiticoneNetFrameworkUI;
+using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,34 +22,102 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private Color darkBg = Color.FromArgb(26, 26, 46);
         private Color darkSecondary = Color.FromArgb(18, 18, 43);
 
+        private FileHandler fileHandler;
+        private List<Dictionary<string, string>> heroesData;
+        private Timer refreshTimer;
+        private SiticonePanel rankPanel;
+        private SiticonePanel threatPanel;
+        private SiticonePanel statsPanel;
+
         public ReportsForm()
         {
             InitializeComponent();
+            fileHandler = new FileHandler();
+            heroesData = new List<Dictionary<string, string>>();
         }
 
         private void ReportsForm_Load(object sender, EventArgs e)
         {
             SetupForm();
             InitializeHeader();
+            LoadHeroesData();
             InitializeStatisticCards();
             InitializeRankDistribution();
             InitializeDetailedReport();
+            InitializeGenerateButton();
+            SetupAutoRefresh();
         }
 
         private void SetupForm()
         {
             this.Text = "Reports & Analytics";
-            this.Size = new Size(1000, 700);
+            this.Size = new Size(1000, 800);
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = darkBg;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
-            this.MinimumSize = new Size(1000, 650);
+            this.MinimumSize = new Size(1000, 750);
+        }
+
+        private void SetupAutoRefresh()
+        {
+            refreshTimer = new Timer();
+            refreshTimer.Interval = 2000;
+            refreshTimer.Tick += (s, e) => RefreshReportsData();
+            refreshTimer.Start();
+        }
+
+        private void RefreshReportsData()
+        {
+            var newHeroesData = new List<Dictionary<string, string>>();
+            var lines = fileHandler.ReadAllHeroes();
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var parts = line.Split('|');
+                if (parts.Length >= 7)
+                {
+                    var hero = new Dictionary<string, string>
+                    {
+                        { "HeroID", parts[0].Trim() },
+                        { "Name", parts[1].Trim() },
+                        { "Age", parts[2].Trim() },
+                        { "Superpower", parts[3].Trim() },
+                        { "ExamScore", parts[4].Trim() },
+                        { "Rank", parts[5].Trim() },
+                        { "ThreatLevel", parts[6].Trim() }
+                    };
+                    newHeroesData.Add(hero);
+                }
+            }
+
+            if (newHeroesData.Count != heroesData.Count || !ListsEqual(newHeroesData, heroesData))
+            {
+                heroesData = newHeroesData;
+                this.Controls.Remove(statsPanel);
+                this.Controls.Remove(rankPanel);
+                this.Controls.Remove(threatPanel);
+                InitializeStatisticCards();
+                InitializeRankDistribution();
+                InitializeDetailedReport();
+            }
+        }
+
+        private bool ListsEqual(List<Dictionary<string, string>> list1, List<Dictionary<string, string>> list2)
+        {
+            if (list1.Count != list2.Count) return false;
+            for (int i = 0; i < list1.Count; i++)
+            {
+                if (list1[i]["HeroID"] != list2[i]["HeroID"]) return false;
+            }
+            return true;
         }
 
         private void InitializeHeader()
         {
-            // Title Label
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ Reports and Analytics ⚡",
@@ -59,7 +128,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(titleLabel);
 
-            // Subtitle
             SiticoneLabel subtitleLabel = new SiticoneLabel
             {
                 Text = "Academy Performance Summary and Statistical Analysis",
@@ -71,32 +139,109 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(subtitleLabel);
         }
 
+        private void LoadHeroesData()
+        {
+            heroesData.Clear();
+            var lines = fileHandler.ReadAllHeroes();
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var parts = line.Split('|');
+                if (parts.Length >= 7)
+                {
+                    var hero = new Dictionary<string, string>
+                    {
+                        { "HeroID", parts[0].Trim() },
+                        { "Name", parts[1].Trim() },
+                        { "Age", parts[2].Trim() },
+                        { "Superpower", parts[3].Trim() },
+                        { "ExamScore", parts[4].Trim() },
+                        { "Rank", parts[5].Trim() },
+                        { "ThreatLevel", parts[6].Trim() }
+                    };
+                    heroesData.Add(hero);
+                }
+            }
+        }
+
+        private int GetTotalHeroes() => heroesData.Count;
+
+        private double GetAverageAge()
+        {
+            if (heroesData.Count == 0) return 0;
+            return heroesData.Average(h => double.TryParse(h["Age"], out double age) ? age : 0);
+        }
+
+        private double GetAverageScore()
+        {
+            if (heroesData.Count == 0) return 0;
+            return heroesData.Average(h => double.TryParse(h["ExamScore"], out double score) ? score : 0);
+        }
+
+        private Dictionary<string, int> GetRankDistribution()
+        {
+            var distribution = new Dictionary<string, int>
+            {
+                { "S-Rank", 0 },
+                { "A-Rank", 0 },
+                { "B-Rank", 0 },
+                { "C-Rank", 0 }
+            };
+
+            foreach (var hero in heroesData)
+            {
+                string rank = hero["Rank"];
+                if (distribution.ContainsKey(rank))
+                    distribution[rank]++;
+            }
+
+            return distribution;
+        }
+
+        private Dictionary<string, int> GetThreatLevelDistribution()
+        {
+            var distribution = new Dictionary<string, int>();
+
+            foreach (var hero in heroesData)
+            {
+                string threatLevel = hero["ThreatLevel"];
+                if (distribution.ContainsKey(threatLevel))
+                    distribution[threatLevel]++;
+                else
+                    distribution[threatLevel] = 1;
+            }
+
+            return distribution;
+        }
+
         private void InitializeStatisticCards()
         {
-            // Statistics Panel
-            SiticonePanel statsPanel = new SiticonePanel
+            statsPanel = new SiticonePanel
             {
-                Size = new Size(917, 110),
+                Size = new Size(940, 110),
                 Location = new Point(30, 80),
                 FillColor = darkSecondary,
                 BorderThickness = 1
             };
 
+            int totalHeroes = GetTotalHeroes();
+            double avgAge = GetAverageAge();
+            double avgScore = GetAverageScore();
+
             int xPos = 8;
 
-            // Total Heroes Card
-            CreateStatCard(statsPanel, "Total Heroes", "331", accentGold, xPos, 12);
+            CreateStatCard(statsPanel, "Total Heroes", totalHeroes.ToString(), accentGold, xPos, 12);
             xPos += 230;
 
-            // Average Age Card
-            CreateStatCard(statsPanel, "Average Age", "27.5", accentBlue, xPos, 12);
+            CreateStatCard(statsPanel, "Average Age", avgAge.ToString("F1"), accentBlue, xPos, 12);
             xPos += 230;
 
-            // Average Score Card
-            CreateStatCard(statsPanel, "Average Score", "85.2", accentGreen, xPos, 12);
+            CreateStatCard(statsPanel, "Average Score", avgScore.ToString("F1"), accentGreen, xPos, 12);
             xPos += 230;
 
-            // Last Updated Card
             CreateStatCard(statsPanel, "Last Updated", DateTime.Now.ToString("MM/dd/yyyy"), accentGray, xPos, 12);
 
             this.Controls.Add(statsPanel);
@@ -112,7 +257,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 2
             };
 
-            // Title
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = title,
@@ -123,7 +267,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             card.Controls.Add(titleLabel);
 
-            // Value
             SiticoneLabel valueLabel = new SiticoneLabel
             {
                 Text = value,
@@ -139,16 +282,14 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeRankDistribution()
         {
-            // Rank Distribution Panel
-            SiticonePanel rankPanel = new SiticonePanel
+            rankPanel = new SiticonePanel
             {
-                Size = new Size(530, 300),
-                Location = new Point(30, 200),
+                Size = new Size(450, 260),
+                Location = new Point(30, 205),
                 FillColor = darkSecondary,
                 BorderThickness = 1
             };
 
-            // Title
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "📊 Heroes by Rank Distribution",
@@ -159,29 +300,23 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             rankPanel.Controls.Add(titleLabel);
 
+            var rankDistribution = GetRankDistribution();
+            int totalHeroes = GetTotalHeroes();
+
             int yPos = 35;
-
-            // S-Rank
-            CreateRankBar(rankPanel, "S-Rank", 78, 331, accentGold, 12, yPos);
-            yPos += 65;
-
-            // A-Rank
-            CreateRankBar(rankPanel, "A-Rank", 156, 331, accentBlue, 12, yPos);
-            yPos += 65;
-
-            // B-Rank
-            CreateRankBar(rankPanel, "B-Rank", 68, 331, accentGreen, 12, yPos);
-            yPos += 65;
-
-            // C-Rank
-            CreateRankBar(rankPanel, "C-Rank", 29, 331, accentGray, 12, yPos);
+            foreach (var rank in new[] { "S-Rank", "A-Rank", "B-Rank", "C-Rank" })
+            {
+                int count = rankDistribution[rank];
+                Color rankColor = GetRankColor(rank);
+                CreateRankBar(rankPanel, rank, count, totalHeroes, rankColor, 12, yPos);
+                yPos += 55;
+            }
 
             this.Controls.Add(rankPanel);
         }
 
         private void CreateRankBar(SiticonePanel parent, string rankName, int count, int total, Color rankColor, int x, int y)
         {
-            // Rank Label
             SiticoneLabel rankLabel = new SiticoneLabel
             {
                 Text = $"{rankName}",
@@ -192,7 +327,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             parent.Controls.Add(rankLabel);
 
-            // Count Label
             SiticoneLabel countLabel = new SiticoneLabel
             {
                 Text = $"{count}/{total}",
@@ -203,50 +337,48 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             parent.Controls.Add(countLabel);
 
-            // Progress Bar Background
             Panel progressBg = new Panel
             {
-                Size = new Size(280, 12),
-                Location = new Point(x + 120, y + 2),
+                Size = new Size(220, 15),
+                Location = new Point(x + 120, y),
                 BackColor = Color.FromArgb(50, 50, 80),
                 BorderStyle = BorderStyle.FixedSingle
             };
             parent.Controls.Add(progressBg);
 
-            // Progress Bar
-            double percentage = (double)count / total;
+            double percentage = total > 0 ? (double)count / total : 0;
             Panel progressBar = new Panel
             {
-                Size = new Size((int)(280 * percentage), 12),
-                Location = new Point(x + 120, y + 2),
-                BackColor = rankColor
+                Size = new Size((int)(220 * percentage), 15),
+                Location = new Point(x + 120, y),
+                BackColor = rankColor,
+                BorderStyle = BorderStyle.None
             };
             parent.Controls.Add(progressBar);
+            progressBar.BringToFront();
 
-            // Percentage Label
             SiticoneLabel percentLabel = new SiticoneLabel
             {
                 Text = $"{(percentage * 100):F1}%",
-                Location = new Point(x + 410, y),
-                Font = new Font("Segoe UI", 7, FontStyle.Bold),
+                Location = new Point(x + 350, y),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
                 ForeColor = rankColor,
                 AutoSize = true
             };
             parent.Controls.Add(percentLabel);
+            percentLabel.BringToFront();
         }
 
         private void InitializeDetailedReport()
         {
-            // Threat Level Distribution Panel
-            SiticonePanel threatPanel = new SiticonePanel
+            threatPanel = new SiticonePanel
             {
-                Size = new Size(400, 320),
-                Location = new Point(600, 200),
+                Size = new Size(460, 260),
+                Location = new Point(510, 205),
                 FillColor = darkSecondary,
                 BorderThickness = 1
             };
 
-            // Title
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚠️ Threat Level Distribution",
@@ -257,63 +389,216 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             threatPanel.Controls.Add(titleLabel);
 
-            // Threat Levels Table
-            int yPos = 35;
-            string[] threatLevels = { "Dragon", "Tiger", "Wolf", "Demon", "Unknown" };
-            int[] threatCounts = { 45, 89, 127, 56, 14 };
-            Color[] threatColors = { accentRed, accentGold, accentBlue, accentGreen, accentGray };
+            var threatDistribution = GetThreatLevelDistribution();
+            var sortedThreats = threatDistribution.OrderByDescending(x => x.Value).ToList();
 
-            for (int i = 0; i < threatLevels.Length; i++)
-            {
-                CreateThreatRow(threatPanel, threatLevels[i], threatCounts[i], threatColors[i], 12, yPos);
-                yPos += 65;
-            }
+            DrawPieChart(threatPanel, sortedThreats);
 
             this.Controls.Add(threatPanel);
         }
 
-        private void CreateThreatRow(SiticonePanel parent, string threatLevel, int count, Color threatColor, int x, int y)
+        private void DrawPieChart(SiticonePanel parent, List<KeyValuePair<string, int>> threatData)
         {
-            // Threat Level Label
-            SiticoneLabel threatLabel = new SiticoneLabel
-            {
-                Text = threatLevel,
-                Location = new Point(x, y),
-                Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                ForeColor = threatColor,
-                AutoSize = true
-            };
-            parent.Controls.Add(threatLabel);
+            if (threatData.Count == 0) return;
 
-            // Icon/Circle
-            Panel circle = new Panel
+            Panel chartContainer = new Panel
             {
-                Size = new Size(14, 14),
-                Location = new Point(x + 90, y + 2),
-                BackColor = threatColor,
-                BorderStyle = BorderStyle.Fixed3D
+                Size = new Size(440, 220),
+                Location = new Point(10, 35),
+                BackColor = darkSecondary,
+                BorderStyle = BorderStyle.None
             };
-            parent.Controls.Add(circle);
 
-            // Count Box
-            SiticoneLabel countLabel = new SiticoneLabel
-            {
-                Text = count.ToString(),
-                Location = new Point(x + 115, y),
-                Font = new Font("Orbitron", 10, FontStyle.Bold),
-                ForeColor = threatColor,
-                AutoSize = true
-            };
-            parent.Controls.Add(countLabel);
+            int chartLeft = 10;
+            int chartTop = 10;
+            int chartSize = 150;
 
-            // Divider Line
-            Panel divider = new Panel
+            Bitmap chartBitmap = new Bitmap(chartSize + 50, chartSize + 50);
+            Graphics g = Graphics.FromImage(chartBitmap);
+            g.Clear(darkSecondary);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            int totalThreats = threatData.Sum(x => x.Value);
+            float startAngle = 0;
+
+            foreach (var threat in threatData)
             {
-                Size = new Size(530, 1),
-                Location = new Point(x, y + 25),
-                BackColor = Color.FromArgb(50, 50, 80)
+                float sweepAngle = (float)((threat.Value / (float)totalThreats) * 360);
+                Color threatColor = GetThreatColor(threat.Key);
+                double percentage = (threat.Value / (double)totalThreats) * 100;
+
+                using (Brush brush = new SolidBrush(threatColor))
+                {
+                    g.FillPie(brush, 15, 15, chartSize, chartSize, startAngle, sweepAngle);
+                }
+
+                using (Pen pen = new Pen(darkSecondary, 2))
+                {
+                    g.DrawPie(pen, 15, 15, chartSize, chartSize, startAngle, sweepAngle);
+                }
+
+                float midAngle = startAngle + sweepAngle / 2;
+                float radians = (float)(midAngle * Math.PI / 180);
+                int labelX = (int)(15 + chartSize / 2 + Math.Cos(radians) * (chartSize / 3));
+                int labelY = (int)(15 + chartSize / 2 + Math.Sin(radians) * (chartSize / 3));
+
+                string percentText = $"{percentage:F0}%";
+                using (Font font = new Font("Segoe UI", 8, FontStyle.Bold))
+                using (Brush textBrush = new SolidBrush(Color.White))
+                {
+                    SizeF textSize = g.MeasureString(percentText, font);
+                    g.DrawString(percentText, font, textBrush, labelX - textSize.Width / 2, labelY - textSize.Height / 2);
+                }
+
+                startAngle += sweepAngle;
+            }
+
+            g.Dispose();
+
+            PictureBox chartPictureBox = new PictureBox
+            {
+                Image = chartBitmap,
+                Size = new Size(chartSize + 50, chartSize + 50),
+                Location = new Point(chartLeft, chartTop),
+                SizeMode = PictureBoxSizeMode.AutoSize,
+                BackColor = darkSecondary,
+                BorderStyle = BorderStyle.None
             };
-            parent.Controls.Add(divider);
+            chartContainer.Controls.Add(chartPictureBox);
+
+            int legendX = chartLeft + chartSize + 80;
+            int legendY = chartTop + 20;
+
+            foreach (var threat in threatData)
+            {
+                Color threatColor = GetThreatColor(threat.Key);
+                string threatName = ExtractThreatName(threat.Key);
+
+                Panel legendBox = new Panel
+                {
+                    Size = new Size(12, 12),
+                    Location = new Point(legendX, legendY),
+                    BackColor = threatColor,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                chartContainer.Controls.Add(legendBox);
+
+                SiticoneLabel legendLabel = new SiticoneLabel
+                {
+                    Text = $"{threatName}: {threat.Value}",
+                    Location = new Point(legendX + 18, legendY - 2),
+                    Font = new Font("Segoe UI", 8),
+                    ForeColor = Color.White,
+                    AutoSize = true
+                };
+                chartContainer.Controls.Add(legendLabel);
+
+                legendY += 25;
+            }
+
+            parent.Controls.Add(chartContainer);
         }
+
+        private string ExtractThreatName(string threatLevel)
+        {
+            if (threatLevel.Contains("Finals"))
+                return "Finals Week";
+            else if (threatLevel.Contains("Midterm"))
+                return "Midterm";
+            else if (threatLevel.Contains("Group"))
+                return "Group Project";
+            else if (threatLevel.Contains("Pop"))
+                return "Pop Quiz";
+            else
+                return threatLevel;
+        }
+
+        private void InitializeGenerateButton()
+        {
+            SiticoneButton generateBtn = new SiticoneButton
+            {
+                Text = "Generate Summary",
+                Size = new Size(200, 38),
+                Location = new Point(400, 480),
+                ForeColor = Color.Black,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold)
+            };
+            generateBtn.BackColor = accentGold;
+            generateBtn.MouseEnter += (s, e) => generateBtn.BackColor = Color.FromArgb(255, 230, 0);
+            generateBtn.MouseLeave += (s, e) => generateBtn.BackColor = accentGold;
+            generateBtn.Click += (s, e) => OnGenerateReportClicked();
+            this.Controls.Add(generateBtn);
+            generateBtn.BringToFront();
+        }
+
+        private void OnGenerateReportClicked()
+        {
+            try
+            {
+                LoadHeroesData();
+
+                int totalHeroes = GetTotalHeroes();
+                double avgAge = GetAverageAge();
+                double avgScore = GetAverageScore();
+                var rankDistribution = GetRankDistribution();
+
+                StringBuilder reportBuilder = new StringBuilder();
+                reportBuilder.AppendLine("=== ONE KICK HEROES ACADEMY SUMMARY REPORT ===");
+                reportBuilder.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                reportBuilder.AppendLine();
+                reportBuilder.AppendLine($"Total Heroes: {totalHeroes}");
+                reportBuilder.AppendLine($"Average Age: {avgAge:F1}");
+                reportBuilder.AppendLine($"Average Exam Score: {avgScore:F1}");
+                reportBuilder.AppendLine();
+                reportBuilder.AppendLine("Heroes by Rank:");
+                reportBuilder.AppendLine($"- S-Rank: {rankDistribution["S-Rank"]}");
+                reportBuilder.AppendLine($"- A-Rank: {rankDistribution["A-Rank"]}");
+                reportBuilder.AppendLine($"- B-Rank: {rankDistribution["B-Rank"]}");
+                reportBuilder.AppendLine($"- C-Rank: {rankDistribution["C-Rank"]}");
+
+                string reportContent = reportBuilder.ToString();
+                fileHandler.SaveReport(reportContent);
+
+                MessageBox.Show("Summary report has been generated and saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error generating report: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private Color GetRankColor(string rank)
+        {
+            switch (rank)
+            {
+                case "S-Rank":
+                    return accentGold;
+                case "A-Rank":
+                    return accentBlue;
+                case "B-Rank":
+                    return accentGreen;
+                case "C-Rank":
+                    return accentGray;
+                default:
+                    return Color.White;
+            }
+        }
+
+        private Color GetThreatColor(string threatLevel)
+        {
+            string threat = threatLevel.ToLower();
+
+            if (threat.Contains("finals week"))
+                return accentRed;
+            else if (threat.Contains("midterm madness"))
+                return accentGold;
+            else if (threat.Contains("group project"))
+                return accentBlue;
+            else if (threat.Contains("pop quiz"))
+                return accentGreen;
+            else
+                return accentGray;
+        }
+
     }
 }
