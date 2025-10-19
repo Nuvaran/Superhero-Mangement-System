@@ -1,4 +1,5 @@
 ﻿using SiticoneNetFrameworkUI;
+using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,10 +23,14 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private Color darkSecondary = Color.FromArgb(18, 18, 43);
 
         private DataGridView heroesGrid;
+        private FileHandler fileHandler;
+        private List<Dictionary<string, string>> heroesData;
 
         public DeleteHeroForm()
         {
             InitializeComponent();
+            fileHandler = new FileHandler();
+            heroesData = new List<Dictionary<string, string>>();
         }
 
         private void DeleteHeroForm_Load(object sender, EventArgs e)
@@ -33,7 +38,8 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             SetupForm();
             InitializeHeader();
             InitializeDataGridView();
-            LoadSampleData();
+            InitializeButtons();
+            LoadHeroesFromFile();
         }
 
         private void SetupForm()
@@ -49,7 +55,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeHeader()
         {
-            // Title Label
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ Delete Hero ⚡",
@@ -60,7 +65,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(titleLabel);
 
-            // Subtitle
             SiticoneLabel subtitleLabel = new SiticoneLabel
             {
                 Text = "Select a hero from the list below and click Delete to remove them from the academy",
@@ -71,7 +75,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(subtitleLabel);
 
-            // Warning Label
             SiticoneLabel warningLabel = new SiticoneLabel
             {
                 Text = "⚠️ Warning: This action cannot be undone!",
@@ -85,7 +88,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeDataGridView()
         {
-            // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
                 Size = new Size(940, 380),
@@ -94,7 +96,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 1
             };
 
-            // DataGridView Title
             SiticoneLabel gridTitle = new SiticoneLabel
             {
                 Text = "📋 Heroes Registry",
@@ -105,7 +106,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             gridPanel.Controls.Add(gridTitle);
 
-            // DataGridView
             heroesGrid = new DataGridView
             {
                 Size = new Size(910, 317),
@@ -126,7 +126,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.GridColor = Color.FromArgb(50, 50, 80);
             heroesGrid.BorderStyle = BorderStyle.None;
 
-            // Setup columns
             heroesGrid.Columns.Add("HeroID", "Hero ID");
             heroesGrid.Columns.Add("Name", "Name");
             heroesGrid.Columns.Add("Age", "Age");
@@ -135,7 +134,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.Columns.Add("Rank", "Rank");
             heroesGrid.Columns.Add("ThreatLevel", "Threat Level");
 
-            // Style headers
             heroesGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkSecondary,
@@ -144,7 +142,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Style cells
             heroesGrid.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkBg,
@@ -155,7 +152,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Padding = new Padding(5)
             };
 
-            // Style alternating rows
             DataGridViewCellStyle alternatingStyle = new DataGridViewCellStyle
             {
                 BackColor = Color.FromArgb(32, 32, 60),
@@ -170,7 +166,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeButtons()
         {
-            // Button Panel
             SiticonePanel buttonPanel = new SiticonePanel
             {
                 Size = new Size(940, 70),
@@ -179,7 +174,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 1
             };
 
-            // Selected Hero Info Label
             SiticoneLabel infoLabel = new SiticoneLabel
             {
                 Text = "Selected Hero: ",
@@ -189,42 +183,31 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 AutoSize = true
             };
             buttonPanel.Controls.Add(infoLabel);
-            this.Tag = infoLabel; // Store reference to update later
+            this.Tag = infoLabel;
 
-            // Delete Button
-            SiticoneButton deleteBtn = new SiticoneButton
+            SiticoneLabel instructionLabel = new SiticoneLabel
             {
-                Text = "🗑️ Delete Hero",
-                Size = new Size(150, 45),
-                Location = new Point(700, 12),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold)
+                Text = "Select a hero and press Backspace to delete",
+                Location = new Point(20, 45),
+                Font = new Font("Segoe UI", 9),
+                ForeColor = accentGray,
+                AutoSize = true
             };
-            deleteBtn.BackColor = accentRed;
-            deleteBtn.MouseEnter += (s, e) => deleteBtn.BackColor = Color.FromArgb(200, 30, 50);
-            deleteBtn.MouseLeave += (s, e) => deleteBtn.BackColor = accentRed;
-            deleteBtn.Click += (s, e) => OnDeleteHeroClicked();
-            buttonPanel.Controls.Add(deleteBtn);
-
-            // Cancel Button
-            SiticoneButton cancelBtn = new SiticoneButton
-            {
-                Text = "❌ Cancel",
-                Size = new Size(150, 45),
-                Location = new Point(770, 12),
-                ForeColor = Color.Black,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold)
-            };
-            cancelBtn.BackColor = accentGray;
-            cancelBtn.MouseEnter += (s, e) => cancelBtn.BackColor = Color.FromArgb(189, 189, 189);
-            cancelBtn.MouseLeave += (s, e) => cancelBtn.BackColor = accentGray;
-            cancelBtn.Click += (s, e) => ClearSelection();
-            buttonPanel.Controls.Add(cancelBtn);
+            buttonPanel.Controls.Add(instructionLabel);
 
             this.Controls.Add(buttonPanel);
 
-            // Update hero info when selection changes
             heroesGrid.SelectionChanged += (s, e) => UpdateSelectedHeroInfo(infoLabel);
+            heroesGrid.KeyDown += (s, e) => OnGridKeyDown(e);
+        }
+
+        private void OnGridKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Back)
+            {
+                e.Handled = true;
+                OnDeleteHeroClicked();
+            }
         }
 
         private void UpdateSelectedHeroInfo(SiticoneLabel infoLabel)
@@ -245,34 +228,50 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void OnDeleteHeroClicked()
         {
-            if (heroesGrid.SelectedRows.Count == 0)
+            try
             {
-                MessageBox.Show("Please select a hero to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                if (heroesGrid.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Please select a hero to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DataGridViewRow selectedRow = heroesGrid.SelectedRows[0];
+                string heroName = selectedRow.Cells["Name"].Value?.ToString() ?? "Unknown";
+                string heroID = selectedRow.Cells["HeroID"].Value?.ToString() ?? "";
+
+                DialogResult result = MessageBox.Show(
+                    $"Are you sure you want to delete '{heroName}' (ID: {heroID})?\n\nThis action cannot be undone!",
+                    "Confirm Deletion",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    var heroToDelete = heroesData.FirstOrDefault(h => h["HeroID"] == heroID);
+
+                    if (heroToDelete != null)
+                    {
+                        heroesData.Remove(heroToDelete);
+                        SaveHeroesToFile();
+                        RefreshGrid();
+
+                        MessageBox.Show($"Hero '{heroName}' has been successfully deleted!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        SiticoneLabel infoLabel = (SiticoneLabel)this.Tag;
+                        infoLabel.Text = "Selected Hero: None";
+                        infoLabel.ForeColor = accentGray;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Hero not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
-
-            DataGridViewRow selectedRow = heroesGrid.SelectedRows[0];
-            string heroName = selectedRow.Cells["Name"].Value?.ToString() ?? "Unknown";
-            string heroID = selectedRow.Cells["HeroID"].Value?.ToString() ?? "";
-
-            // Confirmation dialog
-            DialogResult result = MessageBox.Show(
-                $"Are you sure you want to delete '{heroName}' (ID: {heroID})?\n\nThis action cannot be undone!",
-                "Confirm Deletion",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-
-            if (result == DialogResult.Yes)
+            catch (Exception ex)
             {
-                // Delete the row
-                heroesGrid.Rows.Remove(selectedRow);
-                MessageBox.Show($"Hero '{heroName}' has been successfully deleted!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Clear selection info
-                SiticoneLabel infoLabel = (SiticoneLabel)this.Tag;
-                infoLabel.Text = "Selected Hero: None";
-                infoLabel.ForeColor = accentGray;
+                MessageBox.Show($"Error deleting hero: {ex.Message}\n\n{ex.StackTrace}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -284,19 +283,61 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             infoLabel.ForeColor = accentGray;
         }
 
-        private void LoadSampleData()
+        private void LoadHeroesFromFile()
         {
-            // Sample data - Replace with actual data from file/database
-            heroesGrid.Rows.Add("H001", "Saitama", 25, "One Punch", 98, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H002", "Genos", 18, "Incinerate", 92, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H003", "Mumen Rider", 28, "Justice Crash", 78, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H004", "Tatsumaki", 28, "Telekinesis", 95, "S-Rank", "Dragon");
-            heroesGrid.Rows.Add("H005", "Sonic", 25, "Speed", 88, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H006", "King", 30, "Popularity", 72, "B-Rank", "Wolf");
-            heroesGrid.Rows.Add("H007", "Puri Puri", 26, "Beast", 85, "A-Rank", "Tiger");
-            heroesGrid.Rows.Add("H008", "Zombieman", 40, "Regeneration", 80, "A-Rank", "Tiger");
+            heroesData.Clear();
+            var lines = fileHandler.ReadAllHeroes();
 
-            // Color code the Rank column
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var hero = ParseHeroRecord(line);
+                if (hero != null)
+                {
+                    heroesData.Add(hero);
+                }
+            }
+
+            RefreshGrid();
+        }
+
+        private Dictionary<string, string> ParseHeroRecord(string line)
+        {
+            var parts = line.Split('|');
+            if (parts.Length < 7)
+                return null;
+
+            return new Dictionary<string, string>
+            {
+                { "HeroID", parts[0].Trim() },
+                { "Name", parts[1].Trim() },
+                { "Age", parts[2].Trim() },
+                { "Superpower", parts[3].Trim() },
+                { "ExamScore", parts[4].Trim() },
+                { "Rank", parts[5].Trim() },
+                { "ThreatLevel", parts[6].Trim() }
+            };
+        }
+
+        private void RefreshGrid()
+        {
+            heroesGrid.Rows.Clear();
+
+            foreach (var hero in heroesData)
+            {
+                heroesGrid.Rows.Add(
+                    hero["HeroID"],
+                    hero["Name"],
+                    hero["Age"],
+                    hero["Superpower"],
+                    hero["ExamScore"],
+                    hero["Rank"],
+                    hero["ThreatLevel"]
+                );
+            }
+
             for (int i = 0; i < heroesGrid.Rows.Count; i++)
             {
                 string rank = heroesGrid.Rows[i].Cells["Rank"].Value.ToString();
@@ -304,9 +345,19 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 heroesGrid.Rows[i].Cells["Rank"].Style.ForeColor = rankColor;
                 heroesGrid.Rows[i].Cells["Rank"].Style.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             }
+        }
 
-            // Initialize buttons after data is loaded
-            InitializeButtons();
+        private void SaveHeroesToFile()
+        {
+            List<string> heroRecords = new List<string>();
+
+            foreach (var hero in heroesData)
+            {
+                string record = $"{hero["HeroID"]}|{hero["Name"]}|{hero["Age"]}|{hero["Superpower"]}|{hero["ExamScore"]}|{hero["Rank"]}|{hero["ThreatLevel"]}";
+                heroRecords.Add(record);
+            }
+
+            fileHandler.OverwriteAllHeroes(heroRecords);
         }
 
         private Color GetRankColor(string rank)
