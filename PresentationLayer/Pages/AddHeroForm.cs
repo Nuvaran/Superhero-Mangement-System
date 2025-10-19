@@ -263,6 +263,29 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        private bool HeroNameExists(string heroName)
+        {
+            FileHandler fileHandler = new FileHandler();
+            List<string> heroLines = fileHandler.ReadAllHeroes();
+
+            foreach (string line in heroLines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                string[] parts = line.Split('|');
+                if (parts.Length >= 2)
+                {
+                    string existingName = parts[1].Trim();
+                    if (existingName.Equals(heroName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private void OnSaveHeroClicked()
         {
             // Get references to input textboxes from the formPanel
@@ -296,13 +319,20 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             if (!validator.ValidateHeroInputs(txtHeroID, txtName, txtAge, txtSuperpower, txtExamScore))
                 return;
 
+            // Check for duplicate hero name
+            if (HeroNameExists(txtName.Text))
+            {
+                MessageBox.Show($"A hero with the name '{txtName.Text}' already exists! Please use a different name.", "Duplicate Hero", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             // Calculate rank and threat level
             int score = int.Parse(txtExamScore.Text);
             Calculations calculator = new Calculations();
             var (rank, threatLevel) = calculator.DetermineRankAndThreat(score);
 
             // Create hero record string
-            string heroRecord = $"{txtHeroID.Text} | {txtName.Text} | {txtAge.Text} | {txtSuperpower.Text} | {score} | {rank}-Rank | {threatLevel}";
+            string heroRecord = $"{txtHeroID.Text}|{txtName.Text}|{txtAge.Text}|{txtSuperpower.Text}|{score}|{rank}-Rank|{threatLevel}";
 
             // Save to file
             try
