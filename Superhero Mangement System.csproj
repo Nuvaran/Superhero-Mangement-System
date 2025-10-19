@@ -98,6 +98,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLogicLayer\Calculations.cs" />
+    <Compile Include="BusinessLogicLayer\Validations.cs" />
+    <Compile Include="DataLayer\FileHandler.cs" />
     <Compile Include="PresentationLayer\Pages\AddHeroForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -177,9 +180,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BusinessLogicLayer\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="DataLayer\summary.txt" />
     <Content Include="DataLayer\superheroes.txt" />
