@@ -51,12 +51,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void SetupForm()
         {
             this.Text = "Reports & Analytics";
-            this.Size = new Size(1000, 800);
+            this.Size = new Size(1000, 600);
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = darkBg;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
-            this.MinimumSize = new Size(1000, 750);
+            this.MinimumSize = new Size(800, 500);
         }
 
         private void SetupAutoRefresh()
@@ -518,7 +518,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             SiticoneButton generateBtn = new SiticoneButton
             {
                 Text = "Generate Summary",
-                Size = new Size(200, 38),
+                Size = new Size(200, 30),
                 Location = new Point(400, 480),
                 ForeColor = Color.Black,
                 Font = new Font("Segoe UI", 11, FontStyle.Bold)

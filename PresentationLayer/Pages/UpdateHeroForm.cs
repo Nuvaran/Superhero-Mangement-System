@@ -50,12 +50,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void SetupForm()
         {
             this.Text = "Update Hero Information";
-            this.Size = new Size(1000, 700);
+            this.Size = new Size(1000, 600);
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = darkBg;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
-            this.MinimumSize = new Size(1000, 600);
+            this.MinimumSize = new Size(800, 500);
         }
 
         private void InitializeHeader()

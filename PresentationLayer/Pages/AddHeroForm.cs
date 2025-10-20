@@ -39,12 +39,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void SetupForm()
         {
             this.Text = "Add New Hero";
-            this.Size = new Size(1000, 700);
+            this.Size = new Size(1000, 600);
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = darkBg;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
-            this.MinimumSize = new Size(800, 600);
+            this.MinimumSize = new Size(800, 500);
         }
 
         private void InitializeInputPanel()
@@ -149,10 +149,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Name = textBoxName,
                 Size = new Size(140, 30),
                 Location = new Point(x, y + 22),
-                ForeColor = Color.White,
+                ForeColor = Color.Black,
                 Font = new Font("Segoe UI", 10),
-                BorderStyle = BorderStyle.FixedSingle,
-                BackColor = darkBg
+                BorderStyle = BorderStyle.Fixed3D,
+                BackColor = Color.White
             };
             parent.Controls.Add(textBox);
         }

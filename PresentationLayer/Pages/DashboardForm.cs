@@ -1,6 +1,7 @@
 ﻿using SiticoneNetFrameworkUI;
 using Superhero_Mangement_System.DataLayer;
 using Superhero_Mangement_System.BusinessLogicLayer;
+using Superhero_Mangement_System.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -68,14 +69,14 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 0
             };
 
-            SiticoneLabel titleLabel = new SiticoneLabel
+            PictureBox logoPictureBox = new PictureBox
             {
-                Text = "⚡ ONE KICK HEROES HQ ⚡",
-                Location = new Point(300, 20),
-                Size = new Size(400, 40),
-                ForeColor = accentGold,
-                Font = new Font("Orbitron", 16, FontStyle.Bold),
-                AutoSize = false
+                Image = Properties.Resources.logo, 
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Size = new Size(90, 115), 
+                Location = new Point((headerPanel.Width - 120) / 2, (headerPanel.Height - 120) / 2),
+                BackColor = Color.Transparent,
+                Anchor = AnchorStyles.Top
             };
 
             SiticoneButton menuToggleBtn = new SiticoneButton
@@ -104,7 +105,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             themeToggleBtn.MouseLeave += (s, e) => themeToggleBtn.BackColor = Color.FromArgb(50, 50, 100);
             themeToggleBtn.Click += (s, e) => ToggleTheme(themeToggleBtn);
 
-            headerPanel.Controls.Add(titleLabel);
+            headerPanel.Controls.Add(logoPictureBox);
             headerPanel.Controls.Add(menuToggleBtn);
             headerPanel.Controls.Add(themeToggleBtn);
             this.Controls.Add(headerPanel);
@@ -576,7 +577,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             panel.Controls.Add(title);
 
-            string heroDetails = $"Rank: {hero["Rank"]}\nPower: {hero["Superpower"]}\nScore: {hero["ExamScore"]}/100\nLevel: {hero["Age"]} Years";
+            string heroDetails = $"Rank: {hero["Rank"]}\nPower: {hero["Superpower"]}\nScore: {hero["ExamScore"]}/100\nAge {hero["Age"]} Years";
             SiticoneLabel detailsLabel = new SiticoneLabel
             {
                 Text = heroDetails,
