@@ -53,7 +53,6 @@ namespace Superhero_Mangement_System.PresentationLayer
 
         private void InitializeHeader()
         {
-            // Title Label
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ All Heroes Registry ⚡",
@@ -64,7 +63,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             };
             this.Controls.Add(titleLabel);
 
-            // Subtitle
             SiticoneLabel subtitleLabel = new SiticoneLabel
             {
                 Text = "Complete database of registered superheroes",
@@ -78,7 +76,6 @@ namespace Superhero_Mangement_System.PresentationLayer
 
         private void InitializeFilterPanel()
         {
-            // Filter Panel
             SiticonePanel filterPanel = new SiticonePanel
             {
                 Size = new Size(940, 70),
@@ -87,7 +84,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                 BorderThickness = 1
             };
 
-            // Search Label
             SiticoneLabel searchLabel = new SiticoneLabel
             {
                 Text = "Search by Name:",
@@ -98,7 +94,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             };
             filterPanel.Controls.Add(searchLabel);
 
-            // Search TextBox
             searchBox = new TextBox
             {
                 Size = new Size(200, 30),
@@ -111,7 +106,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             searchBox.TextChanged += (s, e) => ApplyFilters();
             filterPanel.Controls.Add(searchBox);
 
-            // Filter by Rank Label
             SiticoneLabel rankLabel = new SiticoneLabel
             {
                 Text = "Filter by Rank:",
@@ -122,7 +116,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             };
             filterPanel.Controls.Add(rankLabel);
 
-            // Rank ComboBox
             rankCombo = new ComboBox
             {
                 Size = new Size(120, 30),
@@ -136,7 +129,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             rankCombo.SelectedIndexChanged += (s, e) => ApplyFilters();
             filterPanel.Controls.Add(rankCombo);
 
-            // Refresh Button
             SiticoneButton refreshBtn = new SiticoneButton
             {
                 Text = "Refresh",
@@ -156,7 +148,6 @@ namespace Superhero_Mangement_System.PresentationLayer
 
         private void InitializeDataGridView()
         {
-            // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
                 Size = new Size(940, 327),
@@ -165,7 +156,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                 BorderThickness = 1
             };
 
-            // DataGridView
             heroesGrid = new DataGridView
             {
                 Size = new Size(920, 303),
@@ -184,7 +174,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             heroesGrid.GridColor = Color.FromArgb(50, 50, 80);
             heroesGrid.BorderStyle = BorderStyle.None;
 
-            // Setup columns
             heroesGrid.Columns.Add("HeroID", "Hero ID");
             heroesGrid.Columns.Add("Name", "Name");
             heroesGrid.Columns.Add("Age", "Age");
@@ -193,7 +182,6 @@ namespace Superhero_Mangement_System.PresentationLayer
             heroesGrid.Columns.Add("Rank", "Rank");
             heroesGrid.Columns.Add("ThreatLevel", "Threat Level");
 
-            // Style headers
             heroesGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkSecondary,
@@ -202,7 +190,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Style cells
             heroesGrid.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkBg,
@@ -213,7 +200,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                 Padding = new Padding(5)
             };
 
-            // Style alternating rows
             DataGridViewCellStyle alternatingStyle = new DataGridViewCellStyle
             {
                 BackColor = Color.FromArgb(32, 32, 60),
@@ -308,7 +294,6 @@ namespace Superhero_Mangement_System.PresentationLayer
                         parts[6].Trim()
                     );
 
-                    // Color code the Rank column
                     int lastRowIndex = heroesGrid.Rows.Count - 1;
                     string rank = parts[5].Trim();
                     Color rankColor = GetRankColor(rank);

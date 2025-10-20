@@ -49,7 +49,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeInputPanel()
         {
-            // Title Label
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ Add New Hero ⚡",
@@ -60,7 +59,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(titleLabel);
 
-            // Main Input Panel
             SiticonePanel inputPanel = new SiticonePanel
             {
                 Size = new Size(940, 180),
@@ -73,29 +71,22 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             int xPos = 20;
             int yPos = 20;
 
-            // Hero ID Input
             CreateInputField(inputPanel, "Hero ID:", "HeroIDTextBox", xPos, yPos);
             xPos += 180;
 
-            // Hero Name Input
             CreateInputField(inputPanel, "Name:", "NameTextBox", xPos, yPos);
             xPos += 180;
 
-            // Hero Age Input
             CreateInputField(inputPanel, "Age:", "AgeTextBox", xPos, yPos);
             xPos += 180;
 
-            // Hero Superpower Input
             CreateInputField(inputPanel, "Superpower:", "SuperpowerTextBox", xPos, yPos);
 
-            // Reset for second row
             xPos = 20;
             yPos = 95;
 
-            // Hero Exam Score Input
             CreateInputField(inputPanel, "Exam Score (0-100):", "ExamScoreTextBox", xPos, yPos);
 
-            // Save Button
             SiticoneButton saveBtn = new SiticoneButton
             {
                 Text = "➕ Add Hero",
@@ -111,7 +102,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             saveBtn.Click += (s, e) => OnSaveHeroClicked();
             inputPanel.Controls.Add(saveBtn);
 
-            // Clear Button
             SiticoneButton clearBtn = new SiticoneButton
             {
                 Text = "❌ Clear",
@@ -132,7 +122,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void CreateInputField(SiticonePanel parent, string labelText, string textBoxName, int x, int y)
         {
-            // Label
             SiticoneLabel label = new SiticoneLabel
             {
                 Text = labelText,
@@ -143,7 +132,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             parent.Controls.Add(label);
 
-            // TextBox
             TextBox textBox = new TextBox
             {
                 Name = textBoxName,
@@ -159,7 +147,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeDataGridView()
         {
-            // DataGridView Title
             SiticoneLabel gridTitleLabel = new SiticoneLabel
             {
                 Text = "📋 Heroes Database",
@@ -170,7 +157,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             this.Controls.Add(gridTitleLabel);
 
-            // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
                 Size = new Size(940, 230),
@@ -179,7 +165,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 1
             };
 
-            // DataGridView
             heroDataGridView = new DataGridView
             {
                 Size = new Size(920, 207),
@@ -197,7 +182,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroDataGridView.GridColor = Color.FromArgb(50, 50, 80);
             heroDataGridView.BorderStyle = BorderStyle.None;
 
-            // Setup columns
             heroDataGridView.Columns.Add("HeroID", "Hero ID");
             heroDataGridView.Columns.Add("Name", "Name");
             heroDataGridView.Columns.Add("Age", "Age");
@@ -206,7 +190,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroDataGridView.Columns.Add("Rank", "Rank");
             heroDataGridView.Columns.Add("ThreatLevel", "Threat Level");
 
-            // Set column widths
             heroDataGridView.Columns["HeroID"].Width = 70;
             heroDataGridView.Columns["Name"].Width = 100;
             heroDataGridView.Columns["Age"].Width = 60;
@@ -215,7 +198,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroDataGridView.Columns["Rank"].Width = 70;
             heroDataGridView.Columns["ThreatLevel"].Width = 80;
 
-            // Style headers
             heroDataGridView.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkSecondary,
@@ -224,7 +206,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Style cells
             heroDataGridView.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = darkBg,
@@ -242,7 +223,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         {
             try
             {
-                // Find all textboxes in the entire form and clear them
                 foreach (Control ctrl in this.Controls)
                 {
                     if (ctrl is SiticonePanel panel)
@@ -288,14 +268,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void OnSaveHeroClicked()
         {
-            // Get references to input textboxes from the formPanel
             TextBox txtHeroID = null;
             TextBox txtName = null;
             TextBox txtAge = null;
             TextBox txtSuperpower = null;
             TextBox txtExamScore = null;
 
-            // Find textboxes in the form panel
             foreach (Control ctrl in this.Controls)
             {
                 if (ctrl is SiticonePanel panel)
@@ -314,27 +292,22 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 }
             }
 
-            // Validate inputs
             Validations validator = new Validations();
             if (!validator.ValidateHeroInputs(txtHeroID, txtName, txtAge, txtSuperpower, txtExamScore))
                 return;
 
-            // Check for duplicate hero name
             if (HeroNameExists(txtName.Text))
             {
                 MessageBox.Show($"A hero with the name '{txtName.Text}' already exists! Please use a different name.", "Duplicate Hero", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Calculate rank and threat level
             int score = int.Parse(txtExamScore.Text);
             Calculations calculator = new Calculations();
             var (rank, threatLevel) = calculator.DetermineRankAndThreat(score);
 
-            // Create hero record string
             string heroRecord = $"{txtHeroID.Text}|{txtName.Text}|{txtAge.Text}|{txtSuperpower.Text}|{score}|{rank}-Rank|{threatLevel}";
 
-            // Save to file
             try
             {
                 FileHandler fileHandler = new FileHandler();
@@ -342,10 +315,8 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
                 MessageBox.Show($"Hero '{txtName.Text}' has been successfully added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Clear fields
                 ClearInputFieldsDashboard(null);
 
-                // Refresh grid
                 RefreshHeroesGrid();
             }
             catch (Exception ex)
@@ -358,14 +329,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         {
             if (heroDataGridView == null) return;
 
-            // Clear existing rows
             heroDataGridView.Rows.Clear();
 
-            // Read heroes from file
             FileHandler fileHandler = new FileHandler();
             List<string> heroLines = fileHandler.ReadAllHeroes();
 
-            // Parse and display heroes
             foreach (string line in heroLines)
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
@@ -383,7 +351,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                         parts[6].Trim()
                     );
 
-                    // Color code the Rank column
                     int lastRowIndex = heroDataGridView.Rows.Count - 1;
                     string rank = parts[5].Trim();
                     Color rankColor = GetRankColor(rank);
