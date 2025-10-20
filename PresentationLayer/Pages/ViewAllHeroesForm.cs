@@ -139,7 +139,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             // Refresh Button
             SiticoneButton refreshBtn = new SiticoneButton
             {
-                Text = "🔄 Refresh",
+                Text = "Refresh",
                 Size = new Size(120, 40),
                 Location = new Point(800, 15),
                 ForeColor = Color.Black,
@@ -159,7 +159,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
-                Size = new Size(940, 430),
+                Size = new Size(940, 327),
                 Location = new Point(30, 165),
                 FillColor = darkSecondary,
                 BorderThickness = 1
@@ -168,7 +168,7 @@ namespace Superhero_Mangement_System.PresentationLayer
             // DataGridView
             heroesGrid = new DataGridView
             {
-                Size = new Size(920, 410),
+                Size = new Size(920, 303),
                 Location = new Point(10, 10),
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,

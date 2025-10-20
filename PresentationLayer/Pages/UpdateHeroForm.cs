@@ -199,7 +199,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
             SiticoneButton updateBtn = new SiticoneButton
             {
-                Text = "💾 Update Hero",
+                Text = "Update Hero",
                 Size = new Size(140, 45),
                 Location = new Point(20, yPos),
                 ForeColor = Color.Black,

@@ -1,6 +1,10 @@
 ﻿using SiticoneNetFrameworkUI;
+using Superhero_Mangement_System.DataLayer;
+using Superhero_Mangement_System.BusinessLogicLayer;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Superhero_Mangement_System.PresentationLayer.Pages
@@ -16,13 +20,19 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private Color accentGold = Color.FromArgb(255, 215, 0);
         private Color accentBlue = Color.FromArgb(0, 191, 255);
         private Color accentGreen = Color.FromArgb(50, 205, 50);
+        private Color accentRed = Color.FromArgb(220, 53, 69);
         private Color accentGray = Color.FromArgb(169, 169, 169);
         private Color darkBg = Color.FromArgb(26, 26, 46);
         private Color darkSecondary = Color.FromArgb(18, 18, 43);
 
+        private FileHandler fileHandler;
+        private List<Dictionary<string, string>> heroesData;
+
         public DashboardForm()
         {
             InitializeComponent();
+            fileHandler = new FileHandler();
+            heroesData = new List<Dictionary<string, string>>();
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -50,7 +60,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeHeader()
         {
-            // Header Panel
             SiticonePanel headerPanel = new SiticonePanel
             {
                 Size = new Size(1000, 80),
@@ -59,7 +68,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 BorderThickness = 0
             };
 
-            // Logo/Title Label (Centered)
             SiticoneLabel titleLabel = new SiticoneLabel
             {
                 Text = "⚡ ONE KICK HEROES HQ ⚡",
@@ -70,7 +78,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 AutoSize = false
             };
 
-            // Menu Toggle Button (Left Side)
             SiticoneButton menuToggleBtn = new SiticoneButton
             {
                 Text = "☰",
@@ -84,7 +91,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             menuToggleBtn.MouseLeave += (s, e) => menuToggleBtn.BackColor = Color.FromArgb(50, 50, 100);
             menuToggleBtn.Click += (s, e) => ToggleSideMenu();
 
-            // Theme Toggle Button (Right Side with padding)
             SiticoneButton themeToggleBtn = new SiticoneButton
             {
                 Text = isDarkMode ? "☀" : "🌙",
@@ -106,7 +112,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeNavigation()
         {
-            // Left Navigation Panel
             navPanel = new SiticonePanel
             {
                 Size = new Size(220, 520),
@@ -130,7 +135,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void CreateNavMenuItem(string itemName, string icon, int yPos)
         {
-            // Container panel for menu item
             SiticonePanel menuItemPanel = new SiticonePanel
             {
                 Size = new Size(190, 55),
@@ -140,7 +144,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 Parent = navPanel
             };
 
-            // Icon label
             SiticoneLabel iconLabel = new SiticoneLabel
             {
                 Text = icon,
@@ -151,7 +154,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 AutoSize = false
             };
 
-            // Menu text label
             SiticoneLabel textLabel = new SiticoneLabel
             {
                 Text = itemName,
@@ -165,15 +167,13 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             menuItemPanel.Controls.Add(iconLabel);
             menuItemPanel.Controls.Add(textLabel);
 
-            // Highlight for active state
             if (itemName == "Dashboard")
             {
-                activeNavButton = new SiticoneButton { Tag = itemName }; // Reference for tracking
+                activeNavButton = new SiticoneButton { Tag = itemName };
                 menuItemPanel.BackColor = Color.FromArgb(40, 40, 80);
                 iconLabel.ForeColor = accentGold;
                 textLabel.ForeColor = accentGold;
 
-                // Add left border accent
                 Panel leftBorder = new Panel
                 {
                     Size = new Size(4, 55),
@@ -183,7 +183,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 menuItemPanel.Controls.Add(leftBorder);
             }
 
-            // Hover effects
             menuItemPanel.MouseEnter += (s, e) =>
             {
                 menuItemPanel.BackColor = Color.FromArgb(40, 40, 80);
@@ -211,7 +210,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void SelectNavItem(string itemName, SiticonePanel menuPanel, SiticoneLabel iconLabel, SiticoneLabel textLabel)
         {
-            // Reset all menu items
             foreach (Control control in navPanel.Controls)
             {
                 if (control is SiticonePanel panel && panel != menuPanel)
@@ -221,9 +219,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                     {
                         if (child is SiticoneLabel lbl)
                         {
-                            if (lbl == panel.Controls[0]) // Icon
+                            if (lbl == panel.Controls[0])
                                 lbl.ForeColor = accentBlue;
-                            else // Text
+                            else
                                 lbl.ForeColor = Color.White;
                         }
                         else if (child is Panel border)
@@ -234,12 +232,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 }
             }
 
-            // Highlight selected item
             menuPanel.BackColor = Color.FromArgb(40, 40, 80);
             iconLabel.ForeColor = accentGold;
             textLabel.ForeColor = accentGold;
 
-            // Add left gold border
             Panel leftAccent = new Panel
             {
                 Size = new Size(4, 55),
@@ -248,10 +244,8 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
             menuPanel.Controls.Add(leftAccent);
 
-            // Load content page
             LoadContentPage(itemName);
 
-            // Auto-close side menu
             if (isNavOpen)
             {
                 ToggleSideMenu();
@@ -260,7 +254,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void InitializeDashboardContent()
         {
-            // Main Content Panel
             contentPanel = new SiticonePanel
             {
                 Size = new Size(1000, 520),
@@ -307,16 +300,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void LoadAddHeroForm()
         {
             contentPanel.Controls.Clear();
-
-            // Create instance of AddHeroForm
             AddHeroForm addHeroForm = new AddHeroForm
             {
                 TopLevel = false,
                 FormBorderStyle = FormBorderStyle.None,
                 Dock = DockStyle.Fill
             };
-
-            // Add it to content panel and show it
             contentPanel.Controls.Add(addHeroForm);
             addHeroForm.Show();
         }
@@ -324,16 +313,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void LoadViewAllHeroesForm()
         {
             contentPanel.Controls.Clear();
-
-            // Create instance of AddHeroForm
             ViewAllHeroesForm viewAllHeroesForm = new ViewAllHeroesForm
             {
                 TopLevel = false,
                 FormBorderStyle = FormBorderStyle.None,
                 Dock = DockStyle.Fill
             };
-
-            // Add it to content panel and show it
             contentPanel.Controls.Add(viewAllHeroesForm);
             viewAllHeroesForm.Show();
         }
@@ -341,16 +326,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void LoadUpdateHeroForm()
         {
             contentPanel.Controls.Clear();
-
-            // Create instance of AddHeroForm
             UpdateHeroForm updateHeroForm = new UpdateHeroForm
             {
                 TopLevel = false,
                 FormBorderStyle = FormBorderStyle.None,
                 Dock = DockStyle.Fill
             };
-
-            // Add it to content panel and show it
             contentPanel.Controls.Add(updateHeroForm);
             updateHeroForm.Show();
         }
@@ -358,16 +339,12 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void LoadDeleteHeroForm()
         {
             contentPanel.Controls.Clear();
-
-            // Create instance of AddHeroForm
             DeleteHeroForm deleteHeroForm = new DeleteHeroForm
             {
                 TopLevel = false,
                 FormBorderStyle = FormBorderStyle.None,
                 Dock = DockStyle.Fill
             };
-
-            // Add it to content panel and show it
             contentPanel.Controls.Add(deleteHeroForm);
             deleteHeroForm.Show();
         }
@@ -375,68 +352,87 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private void LoadReportsForm()
         {
             contentPanel.Controls.Clear();
-
-            // Create instance of AddHeroForm
             ReportsForm reportsForm = new ReportsForm
             {
                 TopLevel = false,
                 FormBorderStyle = FormBorderStyle.None,
                 Dock = DockStyle.Fill
             };
-
-            // Add it to content panel and show it
             contentPanel.Controls.Add(reportsForm);
             reportsForm.Show();
         }
 
+        private void LoadHeroesData()
+        {
+            heroesData.Clear();
+            var lines = fileHandler.ReadAllHeroes();
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var parts = line.Split('|');
+                if (parts.Length >= 7)
+                {
+                    var hero = new Dictionary<string, string>
+                    {
+                        { "HeroID", parts[0].Trim() },
+                        { "Name", parts[1].Trim() },
+                        { "Age", parts[2].Trim() },
+                        { "Superpower", parts[3].Trim() },
+                        { "ExamScore", parts[4].Trim() },
+                        { "Rank", parts[5].Trim() },
+                        { "ThreatLevel", parts[6].Trim() }
+                    };
+                    heroesData.Add(hero);
+                }
+            }
+        }
+
         private void LoadDashboardPage()
         {
-            // Dashboard Title
+            LoadHeroesData();
+
             SiticoneLabel dashboardTitle = new SiticoneLabel
             {
-                Text = "Dashboard Overview",
-                Location = new Point(20, 20),
+                Text = "⚡ COMMAND CENTER ⚡",
+                Location = new Point(20, 15),
                 Font = new Font("Orbitron", 16, FontStyle.Bold),
                 ForeColor = accentGold,
                 AutoSize = true
             };
             contentPanel.Controls.Add(dashboardTitle);
 
-            // Summary Cards
-            int[] stats = { 42, 18, 156, 38 };
-            string[] cardTitles = { "Total Heroes", "Average Age", "Avg Score", "S-Rank Heroes" };
-            Color[] cardColors = { accentGold, accentBlue, accentGreen, accentGray };
+            int totalHeroes = heroesData.Count;
+            double avgAge = heroesData.Count > 0 ? heroesData.Average(h => double.TryParse(h["Age"], out double age) ? age : 0) : 0;
+            double avgScore = heroesData.Count > 0 ? heroesData.Average(h => double.TryParse(h["ExamScore"], out double score) ? score : 0) : 0;
 
-            int xPos = 20;
-            for (int i = 0; i < 4; i++)
+            CreateLargeStatCard("TOTAL HEROES", totalHeroes.ToString(), accentGold, 20, 70);
+            CreateLargeStatCard("AVG AGE", avgAge.ToString("F1"), accentBlue, 250, 70);
+            CreateLargeStatCard("AVG SCORE", avgScore.ToString("F1"), accentGreen, 480, 70);
+
+            CreateTopHeroesPanel(20, 160);
+            CreateRankDistributionPanel(490, 160);
+
+            var topS = heroesData.Where(h => h["Rank"] == "S-Rank").OrderByDescending(h => double.TryParse(h["ExamScore"], out double s) ? s : 0).FirstOrDefault();
+            if (topS != null)
             {
-                CreateSummaryCard(cardTitles[i], stats[i].ToString(), cardColors[i], xPos, 70);
-                xPos += 185;
+                CreateHeroSpotlightPanel(topS, 20, 340);
             }
 
-            // Rank Distribution Panel
-            CreateRankDistributionPanel(20, 190);
-
-            // Hero Spotlight Panel
-            CreateHeroSpotlightPanel(510, 190);
-
-            // Footer info
-            SiticoneLabel footerLbl = new SiticoneLabel
+            var topA = heroesData.Where(h => h["Rank"] == "A-Rank").OrderByDescending(h => double.TryParse(h["ExamScore"], out double s) ? s : 0).FirstOrDefault();
+            if (topA != null)
             {
-                Text = "Last Updated: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                Location = new Point(20, 450),
-                Font = new Font("Segoe UI", 8),
-                ForeColor = accentGray,
-                AutoSize = true
-            };
-            contentPanel.Controls.Add(footerLbl);
+                CreateHeroSpotlightPanel(topA, 490, 340);
+            }
         }
 
-        private void CreateSummaryCard(string title, string value, Color accentColor, int x, int y)
+        private void CreateLargeStatCard(string title, string value, Color accentColor, int x, int y)
         {
             SiticonePanel card = new SiticonePanel
             {
-                Size = new Size(170, 95),
+                Size = new Size(210, 75),
                 Location = new Point(x, y),
                 FillColor = darkSecondary,
                 BorderThickness = 2,
@@ -446,17 +442,17 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             SiticoneLabel cardTitle = new SiticoneLabel
             {
                 Text = title,
-                Location = new Point(12, 8),
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                ForeColor = Color.LightGray,
+                Location = new Point(10, 5),
+                Font = new Font("Orbitron", 9, FontStyle.Bold),
+                ForeColor = accentColor,
                 AutoSize = true
             };
 
             SiticoneLabel cardValue = new SiticoneLabel
             {
                 Text = value,
-                Location = new Point(12, 32),
-                Font = new Font("Orbitron", 18, FontStyle.Bold),
+                Location = new Point(10, 28),
+                Font = new Font("Orbitron", 24, FontStyle.Bold),
                 ForeColor = accentColor,
                 AutoSize = true
             };
@@ -476,11 +472,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
         }
 
-        private void CreateRankDistributionPanel(int x, int y)
+        private void CreateTopHeroesPanel(int x, int y)
         {
             SiticonePanel panel = new SiticonePanel
             {
-                Size = new Size(460, 230),
+                Size = new Size(450, 160),
                 Location = new Point(x, y),
                 FillColor = darkSecondary,
                 BorderThickness = 1,
@@ -489,62 +485,123 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
             SiticoneLabel title = new SiticoneLabel
             {
-                Text = "Rank Distribution",
-                Location = new Point(15, 12),
-                Font = new Font("Orbitron", 11, FontStyle.Bold),
+                Text = "🏆 TOP 5 ELITE HEROES",
+                Location = new Point(15, 10),
+                Font = new Font("Orbitron", 10, FontStyle.Bold),
+                ForeColor = accentGold,
+                AutoSize = true
+            };
+            panel.Controls.Add(title);
+
+            var topHeroes = heroesData.OrderByDescending(h => double.TryParse(h["ExamScore"], out double s) ? s : 0).Take(5).ToList();
+            int heroY = 35;
+            int rank = 1;
+
+            foreach (var hero in topHeroes)
+            {
+                string heroText = $"{rank}. {hero["Name"]} ({hero["ExamScore"]}/100)";
+                SiticoneLabel heroLabel = new SiticoneLabel
+                {
+                    Text = heroText,
+                    Location = new Point(15, heroY),
+                    Font = new Font("Segoe UI", 8),
+                    ForeColor = rank == 1 ? accentGold : rank <= 3 ? accentBlue : Color.White,
+                    AutoSize = true
+                };
+                panel.Controls.Add(heroLabel);
+                heroY += 25;
+                rank++;
+            }
+        }
+
+        private void CreateRankDistributionPanel(int x, int y)
+        {
+            SiticonePanel panel = new SiticonePanel
+            {
+                Size = new Size(450, 160),
+                Location = new Point(x, y),
+                FillColor = darkSecondary,
+                BorderThickness = 1,
+                Parent = contentPanel
+            };
+
+            SiticoneLabel title = new SiticoneLabel
+            {
+                Text = "⚔️ RANK DISTRIBUTION",
+                Location = new Point(15, 10),
+                Font = new Font("Orbitron", 10, FontStyle.Bold),
                 ForeColor = accentBlue,
                 AutoSize = true
             };
             panel.Controls.Add(title);
 
-            string rankInfo = "S-Rank: 38 Heroes\nA-Rank: 156 Heroes\nB-Rank: 95 Heroes\nC-Rank: 42 Heroes";
+            var sRank = heroesData.Count(h => h["Rank"] == "S-Rank");
+            var aRank = heroesData.Count(h => h["Rank"] == "A-Rank");
+            var bRank = heroesData.Count(h => h["Rank"] == "B-Rank");
+            var cRank = heroesData.Count(h => h["Rank"] == "C-Rank");
+
+            string rankInfo = $"S-Rank: {sRank}\nA-Rank: {aRank}\nB-Rank: {bRank}\nC-Rank: {cRank}";
             SiticoneLabel rankLabel = new SiticoneLabel
             {
                 Text = rankInfo,
-                Location = new Point(15, 40),
-                Font = new Font("Segoe UI", 9),
+                Location = new Point(15, 35),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 ForeColor = Color.White,
                 AutoSize = true
             };
             panel.Controls.Add(rankLabel);
         }
 
-        private void CreateHeroSpotlightPanel(int x, int y)
+        private void CreateHeroSpotlightPanel(Dictionary<string, string> hero, int x, int y)
         {
             SiticonePanel panel = new SiticonePanel
             {
-                Size = new Size(460, 230),
+                Size = new Size(450, 140),
                 Location = new Point(x, y),
                 FillColor = darkSecondary,
-                BorderThickness = 1,
+                BorderThickness = 2,
                 Parent = contentPanel
             };
 
+            string rank = hero["Rank"].Replace("-Rank", "");
+            Color rankColor = GetRankColor(rank);
+
             SiticoneLabel title = new SiticoneLabel
             {
-                Text = "⭐ Top S-Rank Heroes",
-                Location = new Point(15, 12),
+                Text = $"🌟 SPOTLIGHT: {hero["Name"].ToUpper()}",
+                Location = new Point(15, 10),
                 Font = new Font("Orbitron", 11, FontStyle.Bold),
-                ForeColor = accentGold,
+                ForeColor = rankColor,
                 AutoSize = true
             };
             panel.Controls.Add(title);
 
-            string[] topHeroes = { "Saitama", "Genos", "Mumen Rider" };
-            int heroY = 45;
-
-            foreach (string hero in topHeroes)
+            string heroDetails = $"Rank: {hero["Rank"]}\nPower: {hero["Superpower"]}\nScore: {hero["ExamScore"]}/100\nLevel: {hero["Age"]} Years";
+            SiticoneLabel detailsLabel = new SiticoneLabel
             {
-                SiticoneLabel heroLabel = new SiticoneLabel
-                {
-                    Text = "🦸 " + hero,
-                    Location = new Point(15, heroY),
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                    ForeColor = accentGold,
-                    AutoSize = true
-                };
-                panel.Controls.Add(heroLabel);
-                heroY += 55;
+                Text = heroDetails,
+                Location = new Point(15, 35),
+                Font = new Font("Segoe UI", 8),
+                ForeColor = Color.White,
+                AutoSize = true
+            };
+            panel.Controls.Add(detailsLabel);
+
+
+            panel.UseBorderGradient = true;
+            panel.BorderGradientStartColor = rankColor;
+            panel.BorderGradientEndColor = rankColor;
+        }
+
+        private Color GetRankColor(string rank)
+        {
+            switch (rank)
+            {
+                case "S": return accentGold;
+                case "A": return accentBlue;
+                case "B": return accentGreen;
+                case "C": return accentGray;
+                default: return Color.White;
             }
         }
 
@@ -585,7 +642,6 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
 
         private void DashboardForm_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

@@ -1,0 +1,12 @@
+=== ONE KICK HEROES ACADEMY SUMMARY REPORT ===
+Generated: 2025-10-19 23:43:21
+
+Total Heroes: 5
+Average Age: 21,0
+Average Exam Score: 61,2
+
+Heroes by Rank:
+- S-Rank: 1
+- A-Rank: 1
+- B-Rank: 2
+- C-Rank: 1

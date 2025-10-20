@@ -114,7 +114,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             // Clear Button
             SiticoneButton clearBtn = new SiticoneButton
             {
-                Text = "🔄 Clear",
+                Text = "❌ Clear",
                 Size = new Size(130, 50),
                 Location = new Point(370, 95),
                 ForeColor = Color.White,
@@ -173,7 +173,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             // DataGridView Panel
             SiticonePanel gridPanel = new SiticonePanel
             {
-                Size = new Size(940, 360),
+                Size = new Size(940, 230),
                 Location = new Point(30, 265),
                 FillColor = darkSecondary,
                 BorderThickness = 1
@@ -182,7 +182,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             // DataGridView
             heroDataGridView = new DataGridView
             {
-                Size = new Size(920, 340),
+                Size = new Size(920, 207),
                 Location = new Point(10, 10),
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
