@@ -1,4 +1,5 @@
-﻿using Superhero_Mangement_System.DataLayer;
+﻿using Superhero_Mangement_System.BusinessLogicLayer;
+using Superhero_Mangement_System.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,22 +62,18 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
             {
                 btnUpdateHero.Enabled = false;
                 btnDeleteHero.Enabled = false;
+                btnSummaryReport.Enabled= false;
             }
 
         }
 
         private void dgvHeroes_SelectionChanged(object sender, EventArgs e)
         {
-            // Check if DataGridView itself is ready
+            
             if (dgvHeroes == null) return;
-
-            // Check if CurrentRow exists and is valid
             if (dgvHeroes.CurrentRow == null) return;
-
-            // Check if the row is not a new row and has valid index
             if (dgvHeroes.CurrentRow.IsNewRow) return;
 
-            // Finally safe to access Index
             if (dgvHeroes.CurrentRow.Index >= 0)
             {
                 updateInputs();
@@ -120,22 +117,18 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         }
         private void SelectRowByHeroId(int heroId)
         {
-            // Clear any existing selection
             dgvHeroes.ClearSelection();
 
-            // Search through all rows to find the one with matching ID
             foreach (DataGridViewRow row in dgvHeroes.Rows)
             {
                 if (row.Cells["ID"].Value != null &&
                     Convert.ToInt32(row.Cells["ID"].Value) == heroId)
                 {
-                    // Found the row - select it
+
                     row.Selected = true;
                     dgvHeroes.CurrentCell = row.Cells[0];
-                    dgvHeroes.FirstDisplayedScrollingRowIndex = row.Index; // Scroll to it
+                    dgvHeroes.FirstDisplayedScrollingRowIndex = row.Index; 
 
-                    // This will automatically trigger your SelectionChanged event
-                    // and populate the textboxes with this hero's data
                     break;
                 }
             }
@@ -153,6 +146,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
             {
                 btnUpdateHero.Enabled = false;
                 btnDeleteHero.Enabled = false;
+                btnSummaryReport.Enabled = false;
             }
             //Disable all buttons
             dgvHeroes.Enabled = false;
@@ -167,36 +161,44 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
             btnSave.Visible = true;
             btnCancel.Visible = true;
             lblChange.Visible = true;
-            //Enable input fields
-            txtName.Enabled = true;
-            txtSuperpower.Enabled = true;
-            numAge.Enabled = true;
-            numExamScore.Enabled = true;
+            
 
-            if (changeType == "Add")
-            {
-                //Default input values
-                txtName.Text = "";
-                txtSuperpower.Text = "";
-                numAge.Value = 17;
-                numExamScore.Value = 0;
-
-                //Change shared buttons and label
-                btnSave.Text = "Add";
-                lblChange.Text = "Add New Hero?";
-            }
-            else if (changeType == "Update")
-            {
-                //Change shared buttons and label
-                btnSave.Text = "Update";
-                lblChange.Text = "Update Hero?";
-            }
-            else if (changeType == "Delete")
+            if (changeType == "Delete")
             {
                 btnSave.Text = "Delete";
                 lblChange.Text = "Delete Selected Record?";
             }
+            else
+            {
+                //Enable input fields
+                txtName.Enabled = true;
+                txtSuperpower.Enabled = true;
+                numAge.Enabled = true;
+                numExamScore.Enabled = true;
+
+                if (changeType == "Add")
+                {
+                    //Default input values
+                    txtName.Text = "";
+                    txtSuperpower.Text = "";
+                    numAge.Value = 17;
+                    numExamScore.Value = 0;
+
+                    //Change shared buttons and label
+                    btnSave.Text = "Add";
+                    lblChange.Text = "Add New Hero?";
+                }
+                else if (changeType == "Update")
+                {
+                    //Change shared buttons and label
+                    btnSave.Text = "Update";
+                    lblChange.Text = "Update Hero?";
+                }
+            }
         }
+                
+            
+        
         
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -211,22 +213,34 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
         string change;
         internal void btnSave_Click(object sender, EventArgs e)
         {
-            
+            bool inputsAccepted = false;
             if (change == "Add")
             {
                 string[] heroFields = {txtName.Text.Trim(),numAge.Value.ToString(),txtSuperpower.Text.Trim(),numExamScore.Value.ToString() };
-                FileHandler.AddNewHero(heroFields);
+                
+                if (CalculationsAndConversions.ValidateInputs(heroFields[0], heroFields[2]))
+                {
+                    FileHandler.AddNewHero(heroFields);
+                    inputsAccepted = true;
+                }
+
             } else if (change == "Update")
             {
                 string[] heroFields = { txtName.Text.Trim(), numAge.Value.ToString(), txtSuperpower.Text.Trim(), numExamScore.Value.ToString() };
                 int.TryParse(dgvHeroes.CurrentRow.Cells["ID"].Value.ToString(), out int ID);
-                FileHandler.UpdateHero(ID, heroFields);
+                if (CalculationsAndConversions.ValidateInputs(heroFields[0], heroFields[2]))
+                {
+                    FileHandler.UpdateHero(ID,heroFields);
+                    inputsAccepted = true;
+                }
             } else if (change == "Delete")
             {
                 int.TryParse(dgvHeroes.CurrentRow.Cells["ID"].Value.ToString(), out int ID);
                 FileHandler.DeleteHero(ID);
+                inputsAccepted = true;
             }
-            DisableAllFields();
+            if (inputsAccepted) 
+                DisableAllFields();
         }
 
         private void dgvHeroes_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -236,7 +250,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Forms
 
         private void btnSummaryReport_Click(object sender, EventArgs e)
         {
-            Display.DisplaySummaryInDataGridView(dgvHeroes);
+            if (FileHandler.GetAllHeroes().Count > 0)
+            {
+                Display.DisplaySummaryInDataGridView(dgvHeroes);
+            }
+            
         }
     }
 }

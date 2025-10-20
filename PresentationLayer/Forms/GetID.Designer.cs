@@ -88,7 +88,11 @@
             this.Controls.Add(this.IDInput);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSubmit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "GetID";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Enter and ID to update:";
             this.Load += new System.EventHandler(this.GetID_Load);
             ((System.ComponentModel.ISupportInitialize)(this.IDInput)).EndInit();

@@ -179,6 +179,32 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
 
             return dt;
         }
+
+        internal static bool ValidateInputs(string name, string superpower)
+        {
+            bool valid = true;
+            string errormsg = null;
+            if (name.Length <=1){
+                valid = false;
+                errormsg = "Invalid Name";
+            }
+
+            if ( superpower.Length <= 4)
+            {
+                errormsg = "Invalid Superpower";
+                valid = false;
+            }
+            if (!valid) {
+                MessageBox.Show(
+                "Please enter a valid string with at least one alphabetical character.",
+                errormsg,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            }
+            return valid;
+
+
+        }
     }
 
 

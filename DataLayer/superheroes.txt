@@ -1,13 +1,10 @@
 ID,Name,Age,Superpower,Exam Score,Rank,Threat Level
-1,John Thunder,28,Lightning Control,85,S-Rank,Finals Week
-2,Sarah Vision,24,X-Ray,62,A-Rank,Midterm Madness
-3,Mike Steel,32,Super Strength,55,B-Rank,Group Project Gone Wrong
-4,Emma Swift,26,Superspeed,78,A-Rank,Midterm Madness
-6,Olivia Tides,22,Water Manipulation,92,S-Rank,Finals Week
-7,Chris Blaze,22,Fire Control,45,B-Rank,Group Project Gone Wrong
-8,Sophia Mind,27,Telepathy,88,S-Rank,Finals Week
-9,Alex Stone,35,Earth Control,65,A-Rank,Midterm Madness
-10,Martin,21,Caffiene,55,B-Rank,Group Project Gone Wrong
-11,Piet pompies,17,Wind,0,C-Rank,Pop Quiz
-14,Max Verstappen,117,F1,25,C-Rank,Pop Quiz
-15,Zynadine Zidane,25,Smoking,90,S-Rank,Finals Week
+1,John Thunder,52,Lightning,0,C-Rank,Pop Quiz
+2,Luna Shadowstep,24,Teleportation,88,S-Rank,Finals Week
+3,Dr. Magnus Steel,45,Super Strength,67,A-Rank,Midterm Madness
+4,Chroma Wave,31,Color Manipulation,93,S-Rank,Finals Week
+6,Professor Quantum,25,Time Dilation,95,S-Rank,Finals Week
+7,Zephyr Breeze,19,Wind Control,74,A-Rank,Midterm Madness
+8,Terra Forma,38,Earth Shaping,58,A-Rank,Midterm Madness
+9,Cryo Frost,26,Ice Generation,81,S-Rank,Finals Week
+10,Pixel Glitch,20,Digital Manipulation,89,S-Rank,Finals Week
