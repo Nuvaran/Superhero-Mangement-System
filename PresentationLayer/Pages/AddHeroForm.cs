@@ -29,6 +29,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             InitializeComponent();
         }
 
+        /**
+         * Handles the form load event. 
+         * Initializes the form layout, input fields, and hero data grid display when the form is loaded.
+         */
         private void AddHeroForm_Load(object sender, EventArgs e)
         {
             SetupForm();
@@ -36,6 +40,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             InitializeDataGridView();
         }
 
+        /**
+         * Configures the main properties of the Add Hero form including title, size, background color, and layout settings.
+         */
         private void SetupForm()
         {
             this.Text = "Add New Hero";
@@ -47,6 +54,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**
+         * Initializes and sets up the input panel for hero information entry, 
+         * including labels, textboxes, and action buttons (Add Hero and Clear).
+         */
         private void InitializeInputPanel()
         {
             SiticoneLabel titleLabel = new SiticoneLabel
@@ -120,6 +131,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(inputPanel);
         }
 
+        /**
+         * Dynamically creates and adds a label and textbox input field to the given panel for data entry.
+         */
         private void CreateInputField(SiticonePanel parent, string labelText, string textBoxName, int x, int y)
         {
             SiticoneLabel label = new SiticoneLabel
@@ -145,6 +159,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             parent.Controls.Add(textBox);
         }
 
+        /**
+         * Initializes and displays the DataGridView used to show all heroes in the database.
+         * Configures column headers, colors, and cell styles
+         */
         private void InitializeDataGridView()
         {
             SiticoneLabel gridTitleLabel = new SiticoneLabel
@@ -219,6 +237,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(gridPanel);
         }
 
+        /**
+         * Clears all text fields inside the input panel to reset form entries.
+         */
         private void ClearInputFieldsDashboard(SiticonePanel parent)
         {
             try
@@ -243,6 +264,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Checks if a hero with the same name already exists in the superheroes.txt file.
+         * Prevents duplicate hero name entries.
+         */
         private bool HeroNameExists(string heroName)
         {
             FileHandler fileHandler = new FileHandler();
@@ -266,6 +291,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             return false;
         }
 
+        /**
+         * Handles the Add Hero button click event.
+         * Validates user input, checks for duplicates, calculates hero rank and threat level,
+         * and saves the hero record to the text file and updates the grid.
+         */
         private void OnSaveHeroClicked()
         {
             TextBox txtHeroID = null;
@@ -325,6 +355,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Refreshes the DataGridView to display the latest list of heroes from the text file.
+         * Updates cell colors and font styles based on hero rank.
+         */
         private void RefreshHeroesGrid()
         {
             if (heroDataGridView == null) return;
@@ -360,6 +394,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Returns a color corresponding to a hero's rank for consistent UI theming in the DataGridView.
+         */
         private Color GetRankColor(string rank)
         {
             switch (rank.ToUpper())

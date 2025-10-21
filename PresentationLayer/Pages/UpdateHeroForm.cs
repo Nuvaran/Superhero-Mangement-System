@@ -38,6 +38,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesData = new List<Dictionary<string, string>>();
         }
 
+        /**Event handler for form load event.
+        *  Initializes the form components and loads hero data.
+        */
         private void UpdateHeroForm_Load(object sender, EventArgs e)
         {
             SetupForm();
@@ -47,6 +50,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             LoadHeroesFromFile();
         }
 
+        /**
+         * Configures general form properties including size, colors, and layout behavior.
+         */
         private void SetupForm()
         {
             this.Text = "Update Hero Information";
@@ -58,6 +64,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**
+         * Initializes the header section of the form with title and subtitle labels.
+         */
         private void InitializeHeader()
         {
             SiticoneLabel titleLabel = new SiticoneLabel
@@ -81,6 +90,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(subtitleLabel);
         }
 
+        /**
+         * Initializes the hero list panel with a DataGridView to display existing heroes from the superheroes.txt file.
+         */
         private void InitializeHeroList()
         {
             SiticonePanel listPanel = new SiticonePanel
@@ -160,6 +172,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(listPanel);
         }
 
+        /**
+         * Initializes the edit panel with input fields and buttons for updating hero details.
+         */
         private void InitializeEditPanel()
         {
             SiticonePanel editPanel = new SiticonePanel
@@ -228,6 +243,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(editPanel);
         }
 
+        /**
+         * Creates a labeled TextBox for editing hero details.
+         */
         private void CreateEditField(SiticonePanel parent, string labelText, out TextBox textBox, int x, int y, bool isReadOnly)
         {
             SiticoneLabel label = new SiticoneLabel
@@ -253,6 +271,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             parent.Controls.Add(textBox);
         }
 
+        /**
+         * Event handler for when a hero is selected from the DataGridView.
+         * Populates the edit fields with the selected hero's details.
+         */
         private void OnHeroSelected()
         {
             if (heroesGrid.SelectedRows.Count > 0)
@@ -272,6 +294,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Event handler for the Update Hero button click.
+         * Validates inputs, updates hero data, and saves changes to the superheroes.txt file.
+         */
         private void OnUpdateHeroClicked()
         {
             if (!validations.ValidateHeroInputs(txtHeroID, txtName, txtAge, txtSuperpower, txtExamScore))
@@ -315,6 +341,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Clears all edit fields and resets the selection in the DataGridView.
+         */
         private void ClearEditFields()
         {
             txtHeroID.Text = "";
@@ -325,6 +354,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.ClearSelection();
         }
 
+        /**
+         * Loads hero data from the superheroes.txt file into the heroesData list and refreshes the DataGridView.
+         */
         private void LoadHeroesFromFile()
         {
             heroesData.Clear();
@@ -345,6 +377,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             RefreshGrid();
         }
 
+        /**
+         * Parses a single line from the superheroes.txt file into a dictionary representing a hero.
+         */
         private Dictionary<string, string> ParseHeroRecord(string line)
         {
             var parts = line.Split('|');
@@ -363,6 +398,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
         }
 
+        /**
+         * Refreshes the DataGridView to display the current heroesData list.
+         */
         private void RefreshGrid()
         {
             heroesGrid.Rows.Clear();
@@ -389,6 +427,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Saves the current heroesData list back to the superheroes.txt file.
+         */
         private void SaveHeroesToFile()
         {
             List<string> heroRecords = new List<string>();
@@ -402,6 +443,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             fileHandler.OverwriteAllHeroes(heroRecords);
         }
 
+        /**
+         * Returns the color associated with a given rank.
+         */
         private Color GetRankColor(string rank)
         {
             switch (rank)

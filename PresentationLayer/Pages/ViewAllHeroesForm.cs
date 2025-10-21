@@ -31,6 +31,10 @@ namespace Superhero_Mangement_System.PresentationLayer
             InitializeComponent();
         }
 
+        /**  
+         * Event handler for form load event.
+         * Initializes the form components and loads all heroes data.
+        */
         private void ViewAllHeroesForm_Load(object sender, EventArgs e)
         {
             SetupForm();
@@ -40,6 +44,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             LoadAllHeroes();
         }
 
+        /**  
+         * Configures general form properties including size, colors, and layout behavior.
+        */
         private void SetupForm()
         {
             this.Text = "View All Heroes";
@@ -51,6 +58,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**  
+         * Initializes the header section of the form with title and subtitle labels.
+        */
         private void InitializeHeader()
         {
             SiticoneLabel titleLabel = new SiticoneLabel
@@ -74,6 +84,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             this.Controls.Add(subtitleLabel);
         }
 
+        /**  
+         * Initializes the filter panel with search box, rank filter, and refresh button.
+        */
         private void InitializeFilterPanel()
         {
             SiticonePanel filterPanel = new SiticonePanel
@@ -146,6 +159,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             this.Controls.Add(filterPanel);
         }
 
+        /**  
+         * Initializes the DataGridView to display the list of heroes from the superheroes.txt file with custom styling.
+        */
         private void InitializeDataGridView()
         {
             SiticonePanel gridPanel = new SiticonePanel
@@ -212,6 +228,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             this.Controls.Add(gridPanel);
         }
 
+        /**  
+         * Loads all heroes from the superheroes.txt file and displays them in the DataGridView.
+        */
         private void LoadAllHeroes()
         {
             try
@@ -273,6 +292,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             DisplayHeroes(filteredHeroes);
         }
 
+        /**  
+         * Displays the list of heroes in the DataGridView with appropriate styling based on rank.
+        */
         private void DisplayHeroes(List<string> heroes)
         {
             heroesGrid.Rows.Clear();
@@ -303,6 +325,9 @@ namespace Superhero_Mangement_System.PresentationLayer
             }
         }
 
+        /**  
+         * Returns the color associated with a given hero rank.
+        */
         private Color GetRankColor(string rank)
         {
             switch (rank.ToUpper())

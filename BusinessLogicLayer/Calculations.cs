@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Superhero_Mangement_System.BusinessLogicLayer
 {
+    /**
+     * Calculations class provides methods to determine the rank and threat level
+    */
     public class Calculations
     {
         public (string Rank, string ThreatLevel) DetermineRankAndThreat(int score)

@@ -9,6 +9,10 @@ namespace Superhero_Mangement_System.BusinessLogicLayer
 {
     public class Validations
     {
+        /** 
+         * Validate inputs for superhero details.
+         *  Ensures that all fields are filled and that age and score are numeric.
+         */
         public bool ValidateHeroInputs(TextBox id, TextBox name, TextBox age, TextBox power, TextBox score)
         {
             if (string.IsNullOrWhiteSpace(id.Text) ||

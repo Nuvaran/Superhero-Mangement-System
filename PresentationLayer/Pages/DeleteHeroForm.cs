@@ -33,6 +33,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesData = new List<Dictionary<string, string>>();
         }
 
+        /**
+         * Initializes the form when loaded by setting up the layout,
+         * creating the header, data grid, control buttons, and populating
+         * hero data from the text file.
+         */
         private void DeleteHeroForm_Load(object sender, EventArgs e)
         {
             SetupForm();
@@ -42,6 +47,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             LoadHeroesFromFile();
         }
 
+        /**
+         * Configures general form properties including size, colors, and layout behavior.
+         */
         private void SetupForm()
         {
             this.Text = "Delete Hero";
@@ -53,6 +61,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**
+         * Creates and displays the title, subtitle, and warning labels
+         * for the Delete Hero page header.
+         */
         private void InitializeHeader()
         {
             SiticoneLabel titleLabel = new SiticoneLabel
@@ -86,6 +98,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(warningLabel);
         }
 
+        /**
+         * Initializes and formats the DataGridView used to display all heroes
+         * currently stored in the database, applying color themes and layout styles.
+         */
         private void InitializeDataGridView()
         {
             SiticonePanel gridPanel = new SiticonePanel
@@ -164,6 +180,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(gridPanel);
         }
 
+        /**
+         * Sets up the action buttons and labels below the data grid,
+         * linking keyboard and selection events to update hero info and perform deletions.
+         */
         private void InitializeButtons()
         {
             SiticonePanel buttonPanel = new SiticonePanel
@@ -201,6 +221,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesGrid.KeyDown += (s, e) => OnGridKeyDown(e);
         }
 
+        /**
+         * Handles the Backspace key press event to initiate hero deletion.
+         */
         private void OnGridKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Back)
@@ -210,6 +233,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Updates the "Selected Hero" label whenever a user highlights
+         * a hero in the grid to reflect the current selection.
+         */
         private void UpdateSelectedHeroInfo(SiticoneLabel infoLabel)
         {
             if (heroesGrid.SelectedRows.Count > 0)
@@ -226,6 +253,11 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Handles the deletion process when a user confirms the removal of a hero.
+         * It verifies selection, asks for confirmation, deletes the hero from memory,
+         * updates the file, and refreshes the displayed grid.
+         */
         private void OnDeleteHeroClicked()
         {
             try
@@ -275,14 +307,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
-        private void ClearSelection()
-        {
-            heroesGrid.ClearSelection();
-            SiticoneLabel infoLabel = (SiticoneLabel)this.Tag;
-            infoLabel.Text = "Selected Hero: None";
-            infoLabel.ForeColor = accentGray;
-        }
-
+        /**
+         * Loads all hero data from the text file into memory and populates the grid.
+         */
         private void LoadHeroesFromFile()
         {
             heroesData.Clear();
@@ -303,6 +330,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             RefreshGrid();
         }
 
+        /**
+         * Converts a line from the text file into a hero dictionary object
+         * containing all hero attributes.
+         */
         private Dictionary<string, string> ParseHeroRecord(string line)
         {
             var parts = line.Split('|');
@@ -321,6 +352,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
         }
 
+        /**
+         * Refreshes the hero data grid to display the current hero list from memory.
+         * Also applies color formatting to rank cells.
+         */
         private void RefreshGrid()
         {
             heroesGrid.Rows.Clear();
@@ -347,6 +382,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Saves the current in-memory hero data list back into the text file,
+         * overwriting the previous data.
+         */
         private void SaveHeroesToFile()
         {
             List<string> heroRecords = new List<string>();
@@ -360,6 +399,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             fileHandler.OverwriteAllHeroes(heroRecords);
         }
 
+        /**
+         * Returns the appropriate color for each hero rank for display purposes.
+         */
         private Color GetRankColor(string rank)
         {
             switch (rank)

@@ -36,6 +36,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesData = new List<Dictionary<string, string>>();
         }
 
+        /**
+         * Handles form load event: Sets up the form UI and loads initial data and components.
+         */
         private void ReportsForm_Load(object sender, EventArgs e)
         {
             SetupForm();
@@ -48,6 +51,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             SetupAutoRefresh();
         }
 
+        /**
+         * Configures general form properties including size, colors, and layout behavior.
+         */
         private void SetupForm()
         {
             this.Text = "Reports & Analytics";
@@ -59,6 +65,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**
+         * Sets up a timer to refresh the report data automatically at regular intervals.
+         */
         private void SetupAutoRefresh()
         {
             refreshTimer = new Timer();
@@ -67,6 +76,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             refreshTimer.Start();
         }
 
+        /**
+         * Refreshes the report data by reloading hero information and updating UI components if data has changed.
+         */
         private void RefreshReportsData()
         {
             var newHeroesData = new List<Dictionary<string, string>>();
@@ -106,6 +118,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Compares two lists of hero dictionaries to determine if they are equal based on HeroID.
+         */
         private bool ListsEqual(List<Dictionary<string, string>> list1, List<Dictionary<string, string>> list2)
         {
             if (list1.Count != list2.Count) return false;
@@ -116,6 +131,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             return true;
         }
 
+        /**
+         * Initializes the header section of the form with title and subtitle labels.
+         */
         private void InitializeHeader()
         {
             SiticoneLabel titleLabel = new SiticoneLabel
@@ -139,6 +157,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(subtitleLabel);
         }
 
+        /**
+         * Loads hero data from the superheroes.txt file into the heroesData list.
+         */
         private void LoadHeroesData()
         {
             heroesData.Clear();
@@ -167,6 +188,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Computes the total number of heroes in the dataset.
+         */
         private int GetTotalHeroes() => heroesData.Count;
 
         private double GetAverageAge()
@@ -181,6 +205,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             return heroesData.Average(h => double.TryParse(h["ExamScore"], out double score) ? score : 0);
         }
 
+        /** 
+         * Computes the distribution of heroes by their ranks.
+         */
         private Dictionary<string, int> GetRankDistribution()
         {
             var distribution = new Dictionary<string, int>
@@ -201,6 +228,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             return distribution;
         }
 
+        /** 
+         * Computes the distribution of heroes by their threat levels.
+         */
         private Dictionary<string, int> GetThreatLevelDistribution()
         {
             var distribution = new Dictionary<string, int>();
@@ -217,6 +247,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             return distribution;
         }
 
+        /** 
+         * Initializes and displays the statistic cards at the top of the form.
+         */
         private void InitializeStatisticCards()
         {
             statsPanel = new SiticonePanel
@@ -247,6 +280,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(statsPanel);
         }
 
+        /** 
+         * Creates an individual statistic card with title and value.
+         */
         private void CreateStatCard(SiticonePanel parent, string title, string value, Color accentColor, int x, int y)
         {
             SiticonePanel card = new SiticonePanel
@@ -280,6 +316,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             parent.Controls.Add(card);
         }
 
+        /** 
+         * Initializes and displays the rank distribution bars.
+         */
         private void InitializeRankDistribution()
         {
             rankPanel = new SiticonePanel
@@ -315,6 +354,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(rankPanel);
         }
 
+        /** 
+         * Creates an individual rank distribution bar with labels and progress bar.
+         */
         private void CreateRankBar(SiticonePanel parent, string rankName, int count, int total, Color rankColor, int x, int y)
         {
             SiticoneLabel rankLabel = new SiticoneLabel
@@ -369,6 +411,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             percentLabel.BringToFront();
         }
 
+        /** 
+         * Initializes and displays the detailed threat level distribution report with a pie chart.
+         */
         private void InitializeDetailedReport()
         {
             threatPanel = new SiticonePanel
@@ -397,6 +442,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(threatPanel);
         }
 
+        /** 
+         * Draws a pie chart representing threat level distribution within the specified parent panel.
+         */
         private void DrawPieChart(SiticonePanel parent, List<KeyValuePair<string, int>> threatData)
         {
             if (threatData.Count == 0) return;
@@ -499,6 +547,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             parent.Controls.Add(chartContainer);
         }
 
+        /** 
+         * Extracts a user-friendly threat name from the threat level string.
+         */
         private string ExtractThreatName(string threatLevel)
         {
             if (threatLevel.Contains("Finals"))
@@ -513,6 +564,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 return threatLevel;
         }
 
+        /** 
+         * Initializes the "Generate Summary" button and its click event handler.
+         */
         private void InitializeGenerateButton()
         {
             SiticoneButton generateBtn = new SiticoneButton
@@ -531,6 +585,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             generateBtn.BringToFront();
         }
 
+        /** 
+         * Handles the click event for the "Generate Summary" button to create and save a summary report to the summary.txt file.
+         */
         private void OnGenerateReportClicked()
         {
             try
@@ -567,6 +624,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /** 
+         * Returns the color associated with a given rank.
+         */
         private Color GetRankColor(string rank)
         {
             switch (rank)
@@ -584,6 +644,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /** 
+         * Returns the color associated with a given threat level.
+         */
         private Color GetThreatColor(string threatLevel)
         {
             string threat = threatLevel.ToLower();

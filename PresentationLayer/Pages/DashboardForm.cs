@@ -1,6 +1,6 @@
 ﻿using SiticoneNetFrameworkUI;
-using Superhero_Mangement_System.DataLayer;
 using Superhero_Mangement_System.BusinessLogicLayer;
+using Superhero_Mangement_System.DataLayer;
 using Superhero_Mangement_System.Properties;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace Superhero_Mangement_System.PresentationLayer.Pages
 {
+    /**
+     * Main dashboard form that serves as the central hub for the One Kick Heroes Academy application.
+     */
     public partial class DashboardForm : Form
     {
         private bool isDarkMode = true;
@@ -29,6 +32,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
         private FileHandler fileHandler;
         private List<Dictionary<string, string>> heroesData;
 
+        /**
+         * Initializes a new instance of the DashboardForm and sets up file handling and data storage.
+         */
         public DashboardForm()
         {
             InitializeComponent();
@@ -36,6 +42,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             heroesData = new List<Dictionary<string, string>>();
         }
 
+        /**
+         * Handles the form creation event and initializes all UI components when the form handle is created.
+         */
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
@@ -48,6 +57,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Configures the form's basic properties including size, border style, colors, and window behavior.
+         */
         private void SetupForm()
         {
             this.Text = "One Kick Heroes Academy HQ";
@@ -59,6 +71,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.MinimumSize = new Size(800, 500);
         }
 
+        /**
+         * Creates and configures the header panel containing the application title, menu toggle button, and theme toggle button.
+         */
         private void InitializeHeader()
         {
             SiticonePanel headerPanel = new SiticonePanel
@@ -111,6 +126,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(headerPanel);
         }
 
+        /**
+         * Creates the side navigation panel with all menu items including Dashboard, Add/View/Update/Delete Hero, Reports, and Close.
+         * Navigation panel is hidden initially and slides in/out when toggled.
+         */
         private void InitializeNavigation()
         {
             navPanel = new SiticonePanel
@@ -134,6 +153,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(navPanel);
         }
 
+        /**
+         * Creates an individual navigation menu item with icon, text, and hover effects.
+         * Handles click events to navigate to different sections of the application.
+         */
         private void CreateNavMenuItem(string itemName, string icon, int yPos)
         {
             SiticonePanel menuItemPanel = new SiticonePanel
@@ -175,7 +198,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                 iconLabel.ForeColor = accentGold;
                 textLabel.ForeColor = accentGold;
 
-                Panel leftBorder = new Panel
+                System.Windows.Forms.Panel leftBorder = new System.Windows.Forms.Panel
                 {
                     Size = new Size(4, 55),
                     Location = new Point(0, 0),
@@ -209,14 +232,18 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             navPanel.Controls.Add(menuItemPanel);
         }
 
+        /**
+         * Handles navigation item selection, updates visual highlighting, and loads the corresponding content page.
+         * Automatically closes the side menu after selection.
+         */
         private void SelectNavItem(string itemName, SiticonePanel menuPanel, SiticoneLabel iconLabel, SiticoneLabel textLabel)
         {
-            foreach (Control control in navPanel.Controls)
+            foreach (System.Windows.Forms.Control control in navPanel.Controls)
             {
                 if (control is SiticonePanel panel && panel != menuPanel)
                 {
                     panel.BackColor = darkBg;
-                    foreach (Control child in panel.Controls)
+                    foreach (System.Windows.Forms.Control child in panel.Controls)
                     {
                         if (child is SiticoneLabel lbl)
                         {
@@ -225,7 +252,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
                             else
                                 lbl.ForeColor = Color.White;
                         }
-                        else if (child is Panel border)
+                        else if (child is System.Windows.Forms.Panel border)
                         {
                             panel.Controls.Remove(border);
                         }
@@ -237,7 +264,7 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             iconLabel.ForeColor = accentGold;
             textLabel.ForeColor = accentGold;
 
-            Panel leftAccent = new Panel
+            System.Windows.Forms.Panel leftAccent = new System.Windows.Forms.Panel
             {
                 Size = new Size(4, 55),
                 Location = new Point(0, 0),
@@ -253,6 +280,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * nitializes the main content panel where all page content will be displayed.
+         */
         private void InitializeDashboardContent()
         {
             contentPanel = new SiticonePanel
@@ -268,6 +298,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             this.Controls.Add(contentPanel);
         }
 
+        /**
+         * Routes to the appropriate content page based on the navigation item selected.
+         * Clears the content panel before loading the new page.
+         */
         private void LoadContentPage(string pageName)
         {
             contentPanel.Controls.Clear();
@@ -298,6 +332,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Loads the AddHeroForm into the content panel as a child form.
+         */
         private void LoadAddHeroForm()
         {
             contentPanel.Controls.Clear();
@@ -311,6 +348,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             addHeroForm.Show();
         }
 
+        /**
+         * Loads the ViewAllHeroesForm into the content panel as a child form.
+         * 
+         */
         private void LoadViewAllHeroesForm()
         {
             contentPanel.Controls.Clear();
@@ -324,6 +365,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             viewAllHeroesForm.Show();
         }
 
+        /**
+         * Loads the UpdateHeroForm into the content panel as a child form.
+         * 
+         */
         private void LoadUpdateHeroForm()
         {
             contentPanel.Controls.Clear();
@@ -337,6 +382,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             updateHeroForm.Show();
         }
 
+        /**
+         * Loads the DeleteHeroForm into the content panel as a child form.
+         * 
+         */
         private void LoadDeleteHeroForm()
         {
             contentPanel.Controls.Clear();
@@ -350,6 +399,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             deleteHeroForm.Show();
         }
 
+        /**
+         * Loads the ReportsForm into the content panel as a child form.
+         * 
+         */
         private void LoadReportsForm()
         {
             contentPanel.Controls.Clear();
@@ -363,6 +416,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             reportsForm.Show();
         }
 
+        /**
+         * Loads hero data from the superheroes.txt file and stores it in the heroesData collection.
+         * Parses each line and creates a dictionary containing hero properties.
+         */
         private void LoadHeroesData()
         {
             heroesData.Clear();
@@ -391,6 +448,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Creates the main dashboard page with statistics, top heroes, rank distribution, and hero spotlights.
+         * Displays real-time data from the superheroes.txt file.
+         */
         private void LoadDashboardPage()
         {
             LoadHeroesData();
@@ -429,6 +490,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Creates a large statistic card displaying a title and value with the specified accent color.
+         */
         private void CreateLargeStatCard(string title, string value, Color accentColor, int x, int y)
         {
             SiticonePanel card = new SiticonePanel
@@ -473,6 +537,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             };
         }
 
+        /**
+         * Creates a panel displaying the top 5 heroes ranked by exam score.
+         *  Top 3 heroes are color-coded with gold for rank 1 and blue for ranks 2-3.
+         */
         private void CreateTopHeroesPanel(int x, int y)
         {
             SiticonePanel panel = new SiticonePanel
@@ -515,6 +583,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Creates a panel showing the distribution of heroes across all rank categories (S, A, B, C).
+         */
         private void CreateRankDistributionPanel(int x, int y)
         {
             SiticonePanel panel = new SiticonePanel
@@ -553,6 +624,10 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             panel.Controls.Add(rankLabel);
         }
 
+        /**
+         * Creates a spotlight panel highlighting a specific hero with their details including rank, power, score, and age.
+         * Panel border is color-coded based on the hero's rank.
+         */
         private void CreateHeroSpotlightPanel(Dictionary<string, string> hero, int x, int y)
         {
             SiticonePanel panel = new SiticonePanel
@@ -594,6 +669,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             panel.BorderGradientEndColor = rankColor;
         }
 
+        /**
+         * Returns the appropriate accent color based on the hero's rank letter (S, A, B, or C).
+         */
         private Color GetRankColor(string rank)
         {
             switch (rank)
@@ -606,6 +684,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             }
         }
 
+        /**
+         * Toggles between dark and light theme modes.
+         */
         private void ToggleTheme(SiticoneButton btn)
         {
             isDarkMode = !isDarkMode;
@@ -613,6 +694,9 @@ namespace Superhero_Mangement_System.PresentationLayer.Pages
             MessageBox.Show("Theme toggle - Light/Dark mode switching logic would be implemented here.", "Theme");
         }
 
+        /**
+         * Animates the side navigation menu to slide in or out when toggled.
+         */
         private void ToggleSideMenu()
         {
             if (slideTimer != null && slideTimer.Enabled)
